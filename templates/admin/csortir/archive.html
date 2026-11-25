@@ -1,0 +1,145 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion des Utilisateur{% endblock %}
+
+{% block body %}
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Archive des courriers départ</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Archive</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Les Sortis</h3>
+				<div class="float-right">
+				{#<a class="btn btn-outline-primary" href="{{ path('app_csortir_new') }}" align="right" >Nouveau </a>
+				<a class="btn btn-outline-info" href="{{ path('app_carrive_index') }}" align="right" >Courriier Arrivé </a>#}
+				   </div>
+              </div>
+			   
+			  
+              <!-- /.card-header -->
+              <div class="card-body">
+			 
+			  {% include 'layouts/includes/alert.html' %}
+			   <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche de diligences par date : </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation" value="{{dates}}"  required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_csortir_archive') }}" align="right" >Touts </a>
+				</form> <br>
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                
+				<th>Date</th>
+				 <th>Numro</th>
+				<th>Objet</th>
+                 <th>Type</th>
+				<th>Signataire</th>
+				<th>Destinataire</th>
+               
+                <th>Agent / Statut</th>
+                <!-- <th>Commentaire</th> -->
+                
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for csortir in csortirs %}
+           
+            <tr>
+			{#<td>{{ nbr }}</td>#}
+            <td>{{ csortir.date|date('Y-m-d') if csortir.date else '' }}</td>
+			 <td> <span style="color:red; font-weight:bold;font-size:16px">{{ csortir.numsortir }}</span></td>
+			
+			 <td>{{ csortir.objet }} <a href="{{file_url('courrier_sortis', csortir.courrier) }}" target="_blank" > <i class="fas fa-file-pdf" style=" font-size:24px"></i></a></td>
+             <td>{{ csortir.type.libelle }}</td>
+             <td>{{ csortir.auteur.libelle }}</td>
+			  <td>{{ csortir.destinataire }}</td>
+			
+                <td>
+				{% if csortir.statut %}
+				{{ csortir.agent }} / <small class="badge badge-success"><i class="far fa-clock"></i> Envoyé</small><br>
+				{% if csortir.decharge is not none%}
+				<a href="{{file_url('courrier_sortis', csortir.decharge) }}" target="_blank" > Décharge </a>
+				
+				{% endif %}
+				 {% else %}
+				<small class="badge badge-warning"><i class="far fa-clock"></i> Non envoyé</small>
+				  {% endif %}
+				</td>
+               
+                
+                <td>
+				
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_csortir_show', {'id': csortir.id}) }}"><i class="fas fa-folder"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_csortir_edit', {'id': csortir.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				
+				
+			    <a class="btn btn-danger btn-sm" href="{{ path('app_cs_delete', {'id': csortir.id}) }}" data-method="post" data-confirm="Voulez-vous supprimer ce courrier départ ?"><i class="fas fa-trash"> </i></a>
+				
+				<a class="btn btn-default btn-sm" href="{{ path('app_nonapp_csarchive', {'id': csortir.id}) }}" data-method="post"><i class="fas fa-trash-restore"></i> </a>
+				
+				
+
+	  
+				
+                    {#<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': carrive.id}) }}">edit</a>#}
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun courrier </td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+    
+{% endblock %}

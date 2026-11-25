@@ -2,8 +2,8 @@
 //! Sert à la fonction `path()` des templates, pour que les templates portés gardent
 //! leurs `path('app_xxx', {'id': ..})` tels quels.
 //!
-//! Une route pas encore portée renvoie `#` (et un avertissement dans les logs) :
-//! les liens restent inertes au lieu de casser la page.
+//! Une route pas encore portée renvoie `#a-venir` : le layout affiche ces liens grisés,
+//! avec un message au clic, au lieu de casser la page.
 
 pub fn pattern(name: &str) -> Option<&'static str> {
     Some(match name {
@@ -46,6 +46,17 @@ pub fn pattern(name: &str) -> Option<&'static str> {
         "app_nontraite" => "/admin/imputations/{id}/non-traite",
         "app_imparchive" => "/admin/imputations/{id}/archiver",
         "app_nonapp_imparchive" => "/admin/imputations/{id}/desarchiver",
+
+        // Courrier départ
+        "app_csortir_index" => "/admin/courriers/departs",
+        "app_csortir_archive" => "/admin/courriers/departs/archives",
+        "app_csortir_new" => "/admin/courriers/departs/nouveau",
+        "app_csortir_show" => "/admin/courriers/departs/{id}",
+        "app_csortir_edit" => "/admin/courriers/departs/{id}/modifier",
+        "app_csortir_decharge" => "/admin/courriers/departs/{id}/decharge",
+        "app_cs_delete" => "/admin/courriers/departs/{id}/supprimer",
+        "app_csarchive" => "/admin/courriers/departs/{id}/archiver",
+        "app_nonapp_csarchive" => "/admin/courriers/departs/{id}/desarchiver",
 
         // Espace service
         "app_destinataire_show" => "/admin/services/{id}",

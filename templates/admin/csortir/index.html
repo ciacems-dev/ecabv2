@@ -1,0 +1,147 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion des Utilisateur{% endblock %}
+
+{% block body %}
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-8">
+            <h1>Les courriers départ du Cabinet du Ministre</h1>
+          </div>
+          <div class="col-sm-4">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Courriers départs</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+               
+				<div class="float-right">
+				<a class="btn btn-outline-primary" href="{{ path('app_csortir_new') }}" align="right" >Nouveau </a>
+			<a class="btn btn-info" href="{{ path('app_typedepart_index') }}" align="right" >Type Départs </a>
+				   </div>
+              </div>
+			   
+			  
+              <!-- /.card-header -->
+              <div class="card-body">
+			 
+			  {% include 'layouts/includes/alert.html' %}
+			   <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche  : &nbsp;&nbsp;&nbsp; </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation" value="{{dates}}"  required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_csortir_index') }}" align="right" >Touts </a>
+				</form> <br>
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+				 
+                 <th>Numéro</th>
+				 <th>Date</th>
+				  <th>Type</th> 
+				<th>Objet</th>
+				<th>Signataire</th>
+				<th>Destinataire</th>
+                <th>Agent</th>
+                <th>Statut</th>
+                <!-- <th>Commentaire</th> -->
+                
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for csortir in csortirs %}
+            {# and csortir.date|date('Y')==annee #}
+            <tr>
+			
+			 <td> <span style="color:red; font-weight:bold;font-size:16px">{{ csortir.numsortir }}</span></td>
+			<td>{{ csortir.date|date('Y-m-d') if csortir.date else '' }}</td>
+			<td>{{ csortir.type.libelle }}</td>
+			 <td>{{ csortir.objet }} <a href="{{file_url('courrier_sortis', csortir.courrier) }}" target="_blank" > <i class="fas fa-file-pdf" style=" font-size:15px"></i></a></td>
+             <td>{{ csortir.auteur.libelle }}</td>
+			  <td>{{ csortir.destinataire }}</td>
+			 <td>{{ csortir.agent }}</td>
+                <td>
+				{% if   csortir.decharge is not none%}
+				<a href="{{file_url('courrier_sortis', csortir.decharge) }}" target="_blank" ><small class="badge badge-success">
+				<i class="far fa-clock" style=" font-size:15px"></i> Transmis <i class="fas fa-file-pdf" style=" font-size:15px"></i></small><br>
+				
+				  </a>
+				
+				
+				 {% else %}
+				 <a href="{{ path('app_csortir_decharge', {'id': csortir.id}) }}" >
+				  <small class="badge badge-warning"><i class="far fa-clock"></i> Ajouter la décharge <i class="fas fa-plus" style=" font-size:15px"></i></small>
+				  </a>
+				  {% endif %}
+				</td>
+               
+                
+                <td>
+				
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_csortir_show', {'id': csortir.id}) }}"><i class="fas fa-eye"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_csortir_edit', {'id': csortir.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				
+				
+			    <a class="btn btn-danger btn-sm"  href="{{ path('app_cs_delete', {'id': csortir.id}) }}" data-method="post" data-confirm="Voulez-vous supprimer ce courrier départ ?"><i class="fas fa-trash"> </i></a>
+				{% if csortir.decharge%}
+				<a class="btn btn-default btn-sm" href="{{ path('app_csarchive', {'id': csortir.id}) }}" data-method="post"><i class="fas fa-archive"></i> </a>
+				{% endif %}
+				
+
+	  
+				
+                    {#<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': carrive.id}) }}">edit</a>#}
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun destinataire</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+    
+{% endblock %}

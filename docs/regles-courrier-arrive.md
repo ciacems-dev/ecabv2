@@ -95,3 +95,28 @@ Un utilisateur a un **rôle** (`ROLE_SUPER_ADMIN`, `ROLE_ADMIN`, `ROLE_USER`) et
 | « Transmet à » : l'utilisateur transmetteur était pris dans l'URL | Toujours l'utilisateur connecté | usurpation |
 | Espace d'un autre service accessible par l'URL | Réservé au service et aux super admins | confidentialité |
 | Listes : chargement de toutes les imputations puis filtrage en Twig | Filtrage en SQL | performance |
+
+# Courrier départ
+
+Règles relevées dans `CsortirController`, `CsortirType`, `EditersortirType`, `DechargeType` et les
+templates `admin/csortir/*`.
+
+- Accès : service courrier ou super admin (menu « Gestion de Courriers › Départs »). Un service voit
+  dans son espace les départs dont il est l'initiateur, et peut ouvrir leurs fichiers.
+- Saisie : type*, date d'enregistrement*, numéro d'enregistrement* (saisi tel quel, sans unicité),
+  objet, destinataire* (texte libre), signataire* (service), initiateur* (service), agent de dépôt,
+  courrier (fichier), décharge (fichier). `datesortir` = maintenant à la création.
+- Modification : mêmes champs ; objet et agent deviennent obligatoires (EditersortirType).
+- Décharge : agent + fichier. Envoyer une décharge (saisie, modification ou page dédiée) passe le
+  courrier à « envoyé » (`statut` = 1).
+- Listes :
+
+| Page | Contenu | Tri |
+|---|---|---|
+| Départs | non archivés de l'année en cours (année de la date d'enregistrement) | date décroissante |
+| Archivages › Départs | non archivés de l'**année précédente** (l'original n'affiche nulle part les départs archivés) | date décroissante |
+
+- Archiver n'est proposé qu'une fois la décharge jointe ; « désarchiver » est proposé depuis Archivages.
+
+Écarts volontaires : suppression en POST avec confirmation (elle se faisait par un simple lien,
+sans confirmation) ; fichiers en liste blanche (aucun contrôle à l'origine) et servis par la route protégée.

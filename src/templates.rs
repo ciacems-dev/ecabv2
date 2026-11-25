@@ -35,6 +35,9 @@ pub fn build(templates_dir: &str) -> Environment<'static> {
     env
 }
 
+/// Cible des liens vers les modules pas encore portés (repérée par le layout).
+pub const A_VENIR: &str = "#a-venir";
+
 /// `path('nom_route', {'id': 3})` → `/admin/.../3`. Les paramètres non utilisés dans le motif
 /// sont ajoutés en query string, comme Symfony.
 fn path_fn(name: String, params: Option<Value>) -> Result<Value, Error> {
@@ -48,8 +51,9 @@ fn encode_path(p: &str) -> String {
 
 fn path_string(name: String, params: Option<Value>) -> Result<String, Error> {
     let Some(pattern) = crate::routes::pattern(&name) else {
-        tracing::warn!(route = %name, "route pas encore portée, lien remplacé par #");
-        return Ok("#".into());
+        // Lien vers un module pas encore porté : le layout l'affiche grisé avec un message au clic.
+        tracing::debug!(route = %name, "route pas encore portée");
+        return Ok(A_VENIR.into());
     };
     let mut url = pattern.to_string();
     let mut query = Vec::new();

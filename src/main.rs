@@ -78,7 +78,7 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         login_limiter: Arc::new(LoginLimiter::new(5, Duration::from_secs(15 * 60))),
     };
 
-    use handlers::{courrier_arrive as ca, destinataire, imputation as imp};
+    use handlers::{courrier_arrive as ca, courrier_depart as cd, destinataire, imputation as imp};
     use axum::routing::post;
 
     // Actions simples (supprimer, archiver, traité…) : POST + jeton CSRF vérifié par middleware.
@@ -87,6 +87,9 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         .route("/admin/courriers/arrives/{id}/supprimer/cab", post(ca::delete_cab))
         .route("/admin/courriers/arrives/{id}/archiver", post(ca::archive))
         .route("/admin/courriers/arrives/{id}/desarchiver", post(ca::unarchive))
+        .route("/admin/courriers/departs/{id}/supprimer", post(cd::delete))
+        .route("/admin/courriers/departs/{id}/archiver", post(cd::archive))
+        .route("/admin/courriers/departs/{id}/desarchiver", post(cd::unarchive))
         .route("/admin/imputations/{id}/supprimer", post(imp::delete))
         .route("/admin/imputations/{id}/traite", post(imp::traite))
         .route("/admin/imputations/{id}/non-traite", post(imp::non_traite))
@@ -107,6 +110,13 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         .route("/admin/courriers/arrives/{id}/modifier", get(ca::edit).post(ca::update_courrier))
         .route("/admin/courriers/arrives/{id}/modifier/cab", get(ca::edit_cab).post(ca::update_cab))
         .route("/admin/courriers/arrives/{id}/fiche", get(ca::fiche))
+        // Courrier départ
+        .route("/admin/courriers/departs", get(cd::index))
+        .route("/admin/courriers/departs/archives", get(cd::archives))
+        .route("/admin/courriers/departs/nouveau", get(cd::new).post(cd::create))
+        .route("/admin/courriers/departs/{id}", get(cd::show))
+        .route("/admin/courriers/departs/{id}/modifier", get(cd::edit).post(cd::update))
+        .route("/admin/courriers/departs/{id}/decharge", get(cd::decharge_form).post(cd::decharge_submit))
         // Imputations
         .route("/admin/imputations", get(imp::index))
         .route("/admin/imputations/classees", get(imp::classees))

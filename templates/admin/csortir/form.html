@@ -1,0 +1,85 @@
+{# Enregistrement / modification d'un courrier départ (new, edit : _form.html.twig). #}
+{% extends 'layouts/admin.html' %}
+{% block title %}Courrier départ{% endblock %}
+{% macro select(name, label, choices, current, cls='form-control') %}
+<div><label for="csortir_{{ name }}" class="required">{{ label }}</label>
+  <select id="csortir_{{ name }}" name="{{ name }}" required class="{{ cls }}">
+    {% for c in choices %}<option value="{{ c.id }}" {% if c.id == current %}selected{% endif %}>{{ c.libelle }}</option>{% endfor %}
+  </select></div>
+{% endmacro %}
+{% macro fichier(name, label, current) %}
+<div><label for="csortir_{{ name }}">{{ label }}</label>
+  <input type="file" id="csortir_{{ name }}" name="{{ name }}" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.jpg,.jpeg,.png">
+  {% if current %}<small class="form-text text-muted">Fichier actuel : <a href="{{ file_url('courrier_sortis', current) }}" target="_blank">ouvrir</a>. Choisir un fichier le remplace.</small>{% endif %}
+</div>
+{% endmacro %}
+{% block body %}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6"><h1>{{ titre }}</h1></div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">Courrier départ</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-10 offset-1">
+        <div class="card card-default">
+          <div class="card-body">
+            {% if errors %}
+            <div class="alert alert-danger"><ul class="mb-0">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+            {% endif %}
+            <form name="csortir" method="post" enctype="multipart/form-data">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+              <div class="row">
+                <div class="col-md-3">
+                  <div><label for="csortir_numsortir" class="required">Numéro enregistrement*</label>
+                    <input type="number" id="csortir_numsortir" name="numsortir" required class="form-control" value="{{ v.numsortir or '' }}"></div>
+                </div>
+                <div class="col-md-3">{{ select('type', 'Type*', types, v.type) }}</div>
+                <div class="col-md-6">
+                  <div><label for="csortir_destinataire" class="required">Destinataire*</label>
+                    <input type="text" id="csortir_destinataire" name="destinataire" required maxlength="255" class="form-control" value="{{ v.destinataire or '' }}"></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div><label for="csortir_objet" {% if edition %}class="required"{% endif %}>{{ 'Objet *' if edition else 'Objet ' }}</label>
+                    <textarea id="csortir_objet" name="objet" class="form-control" {% if edition %}required{% endif %}>{{ v.objet or '' }}</textarea></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">{{ select('auteur', 'Signataire*', destinataires, v.auteur, 'form-control select2') }}</div>
+                <div class="col-md-6">{{ select('initiateur', 'Inititeur*', destinataires, v.initiateur, 'form-control select2') }}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div><label for="csortir_agent">Agent de dépot </label>
+                    <input type="text" id="csortir_agent" name="agent" maxlength="255" class="form-control" value="{{ v.agent or '' }}" {% if edition %}required{% endif %}></div>
+                </div>
+                <div class="col-md-4">{{ fichier('courrier', 'Courrier*', v.courrier) }}</div>
+                <div class="col-md-4">{{ fichier('decharge', 'Décharge', v.decharge) }}</div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div><label for="csortir_date" class="required">Date enregistrement* </label>
+                    <input type="date" id="csortir_date" name="date" required class="form-control" value="{{ v.date or '' }}"></div>
+                </div>
+              </div>
+              <br>
+              <button class="btn btn-primary">Enregistrer</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

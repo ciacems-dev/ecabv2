@@ -594,6 +594,24 @@
   <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
 </form>
 <script>
+// Modules pas encore disponibles dans la nouvelle version : liens grisés + message.
+(function () {
+  document.querySelectorAll('a[href^="#a-venir"]').forEach(function (a) {
+    a.style.opacity = '0.5';
+    a.title = 'Module en cours de migration';
+  });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#a-venir"]');
+    if (!a) return;
+    e.preventDefault();
+    if (window.toastr) {
+      toastr.info("Ce module n'est pas encore disponible dans la nouvelle version.");
+    } else {
+      alert("Ce module n'est pas encore disponible dans la nouvelle version.");
+    }
+  });
+})();
+
 // Liens d'action (supprimer, archiver, traité…) : envoyés en POST avec le jeton CSRF.
 (function () {
   var form = document.getElementById('post-action-form');
