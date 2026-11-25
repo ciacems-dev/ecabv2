@@ -573,6 +573,51 @@
 
 {% include 'layouts/includes/script.html' %}
 
+{# Fenêtre de confirmation commune (remplace les fenêtres #modal-danger dupliquées de l'original,
+   qui supprimaient toujours le premier élément de la liste). #}
+<div class="modal fade" id="confirm-modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content bg-danger">
+      <div class="modal-header">
+        <h4 class="modal-title">SUPPRESSION</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body"><p id="confirm-modal-message"></p></div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-light" data-dismiss="modal">NON</button>
+        <button type="button" class="btn btn-outline-light" id="confirm-modal-yes">OUI</button>
+      </div>
+    </div>
+  </div>
+</div>
+<form id="post-action-form" method="post" class="d-none">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+</form>
+<script>
+// Liens d'action (supprimer, archiver, traité…) : envoyés en POST avec le jeton CSRF.
+(function () {
+  var form = document.getElementById('post-action-form');
+  var pending = null;
+  function submit(url) { form.action = url; form.submit(); }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-method="post"], a[data-confirm]');
+    if (!a) return;
+    e.preventDefault();
+    var url = a.getAttribute('href');
+    if (a.hasAttribute('data-confirm')) {
+      pending = url;
+      document.getElementById('confirm-modal-message').textContent = a.getAttribute('data-confirm');
+      $('#confirm-modal').modal('show');
+    } else {
+      submit(url);
+    }
+  });
+  document.getElementById('confirm-modal-yes').addEventListener('click', function () {
+    if (pending) submit(pending);
+  });
+})();
+</script>
+
 {% block scripts %} {% endblock %}
 </body>
 </html>

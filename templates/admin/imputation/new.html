@@ -1,0 +1,16 @@
+{% extends 'admin/imputation/_page.html' %}
+{% import 'admin/imputation/_champs.html' as f %}
+{% block fields %}
+  <div class="row">
+    <div class="col-md-6">{{ f.destinataire(v, destinataires) }}</div>
+    <div class="col-md-6">{{ f.reponse(v, instructions) }}</div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">{{ f.effet(v) }}</div>
+    <div class="col-md-6">{{ f.date('delais', "Delais d'exécution ", v.delais) }}</div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">{{ f.date('date', "Date d'imputation", v.date) }}</div>
+    <div class="col-md-6">{{ f.texte('commentaire', 'Notes', v.commentaire) }}</div>
+  </div>
+{% endblock %}

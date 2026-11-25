@@ -1,0 +1,51 @@
+{# Champs réutilisés par les formulaires d'imputation (équivalents des form_row Symfony). #}
+{% macro destinataire(v, destinataires) %}
+<div><label for="imputation_destinataire" class="required">Destinataire</label>
+  <select id="imputation_destinataire" name="destinataire" required class="form-control select2">
+    {% for d in destinataires %}
+    <option value="{{ d.id }}" {% if d.id == v.destinataire %}selected{% endif %}>{{ d.libelle }}</option>
+    {% endfor %}
+  </select></div>
+{% endmacro %}
+
+{% macro reponse(v, instructions, label='Instruction ') %}
+<div><label for="imputation_reponse" class="required">{{ label }}</label>
+  <select id="imputation_reponse" name="reponse" required class="form-control select2">
+    {% for i in instructions %}
+    <option value="{{ i.value }}" {% if i.value == v.reponse %}selected{% endif %}>{{ i.label }}</option>
+    {% endfor %}
+  </select></div>
+{% endmacro %}
+
+{% macro effet(v) %}
+<div><label for="imputation_effet" class="required">Niveau d'importance</label>
+  <select id="imputation_effet" name="effet" class="form-control">
+    <option value="1" {% if v.effet %}selected{% endif %}>Extrêmement urgent</option>
+    <option value="0" {% if not v.effet %}selected{% endif %}>Urgent</option>
+  </select></div>
+{% endmacro %}
+
+{% macro statut(v) %}
+<div><label for="imputation_statut" class="required">Statut</label>
+  <select id="imputation_statut" name="statut" class="form-control">
+    <option value="1" {% if v.statut %}selected{% endif %}>Traité</option>
+    <option value="0" {% if not v.statut %}selected{% endif %}>Non traité</option>
+  </select></div>
+{% endmacro %}
+
+{% macro date(name, label, value) %}
+<div><label for="imputation_{{ name }}" class="required">{{ label }}</label>
+  <input type="date" id="imputation_{{ name }}" name="{{ name }}" required class="form-control" value="{{ value or '' }}"></div>
+{% endmacro %}
+
+{% macro texte(name, label, value) %}
+<div><label for="imputation_{{ name }}">{{ label }}</label>
+  <textarea id="imputation_{{ name }}" name="{{ name }}" class="form-control" rows="4">{{ value or '' }}</textarea></div>
+{% endmacro %}
+
+{% macro fichier(name, label) %}
+<div><label for="imputation_{{ name }}">{{ label }}</label>
+  <input type="file" id="imputation_{{ name }}" name="{{ name }}" class="form-control"
+         accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.jpg,.jpeg,.png">
+  <small class="form-text text-muted">PDF, Word, Excel, OpenDocument ou image, 50 Mo maximum.</small></div>
+{% endmacro %}

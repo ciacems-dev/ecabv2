@@ -28,6 +28,10 @@ pub fn build(templates_dir: &str) -> Environment<'static> {
     env.add_function("is_granted", is_granted);
     env.add_filter("date", date_filter);
     env.add_filter("slice", slice_filter);
+    env.add_filter("sanitize", sanitize_filter);
+    env.add_function("file_url", |dir: String, name: Option<String>| {
+        Value::from_safe_string(name.filter(|n| !n.is_empty()).map(|n| crate::files::url(&dir, &n)).unwrap_or_default())
+    });
     env
 }
 
@@ -49,8 +53,8 @@ fn path_string(name: String, params: Option<Value>) -> Result<String, Error> {
     };
     let mut url = pattern.to_string();
     let mut query = Vec::new();
-    if let Some(params) = params {
-        if let Ok(keys) = params.try_iter() {
+    if let Some(params) = params
+        && let Ok(keys) = params.try_iter() {
             for key in keys {
                 let k = key.to_string();
                 let v = params.get_item(&key)?.to_string();
@@ -62,7 +66,6 @@ fn path_string(name: String, params: Option<Value>) -> Result<String, Error> {
                 }
             }
         }
-    }
     if !query.is_empty() {
         url.push('?');
         url.push_str(&query.join("&"));
@@ -166,6 +169,15 @@ fn slice_filter(value: Value, start: i64, length: Option<i64>) -> String {
     chars[start..end].iter().collect()
 }
 
+/// Remplace `|raw` de l'original : garde la mise en forme (paragraphes, gras, listes…)
+/// mais retire scripts, attributs d'événements et liens `javascript:`.
+fn sanitize_filter(value: Value) -> Value {
+    if value.is_undefined() || value.is_none() {
+        return Value::from("");
+    }
+    Value::from_safe_string(ammonia::clean(&value.to_string()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -181,6 +193,35 @@ mod tests {
     fn slice_chars() {
         assert_eq!(slice_filter(Value::from("MINISTÈRE DE L'ÉCONOMIE"), 0, Some(10)), "MINISTÈRE ");
         assert_eq!(slice_filter(Value::from(()), 0, Some(10)), "");
+    }
+
+    #[test]
+    fn sanitize() {
+        let out = sanitize_filter(Value::from("<p>Bonjour</p><script>alert(1)</script><img src=x onerror=alert(1)>"));
+        assert_eq!(out.to_string(), "<p>Bonjour</p><img src=\"x\">");
+    }
+
+    /// Tous les templates doivent compiler (erreur de syntaxe détectée avant la mise en ligne).
+    #[test]
+    fn all_templates_compile() {
+        let env = build("templates");
+        let mut stack = vec![std::path::PathBuf::from("templates")];
+        let mut n = 0;
+        while let Some(dir) = stack.pop() {
+            for entry in std::fs::read_dir(dir).unwrap() {
+                let path = entry.unwrap().path();
+                if path.is_dir() {
+                    stack.push(path);
+                } else if path.extension().is_some_and(|e| e == "html") {
+                    let name = path.strip_prefix("templates").unwrap().to_string_lossy().replace('\\', "/");
+                    if let Err(e) = env.get_template(&name) {
+                        panic!("{name} : {e:#}");
+                    }
+                    n += 1;
+                }
+            }
+        }
+        assert!(n > 20, "{n} templates seulement");
     }
 
     #[test]

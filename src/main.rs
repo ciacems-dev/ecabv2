@@ -1,8 +1,11 @@
 mod auth;
 mod config;
 mod error;
+mod files;
+mod forms;
 mod handlers;
 mod layout;
+mod pdf;
 mod routes;
 mod session;
 mod state;
@@ -75,8 +78,54 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         login_limiter: Arc::new(LoginLimiter::new(5, Duration::from_secs(15 * 60))),
     };
 
+    use handlers::{courrier_arrive as ca, destinataire, imputation as imp};
+    use axum::routing::post;
+
+    // Actions simples (supprimer, archiver, traité…) : POST + jeton CSRF vérifié par middleware.
+    let actions = Router::new()
+        .route("/admin/courriers/arrives/{id}/supprimer", post(ca::delete))
+        .route("/admin/courriers/arrives/{id}/supprimer/cab", post(ca::delete_cab))
+        .route("/admin/courriers/arrives/{id}/archiver", post(ca::archive))
+        .route("/admin/courriers/arrives/{id}/desarchiver", post(ca::unarchive))
+        .route("/admin/imputations/{id}/supprimer", post(imp::delete))
+        .route("/admin/imputations/{id}/traite", post(imp::traite))
+        .route("/admin/imputations/{id}/non-traite", post(imp::non_traite))
+        .route("/admin/imputations/{id}/archiver", post(imp::archive))
+        .route("/admin/imputations/{id}/desarchiver", post(imp::unarchive))
+        .route_layer(middleware::from_fn(session::require_csrf_form));
+
     let admin = Router::new()
         .route("/admin", get(handlers::admin_home::index))
+        // Courrier arrivé
+        .route("/admin/courriers/arrives", get(ca::index))
+        .route("/admin/courriers/arrives/dircab", get(ca::index_dircab))
+        .route("/admin/courriers/arrives/archives", get(ca::index_annee_precedente))
+        .route("/admin/courriers/arrives/classes", get(ca::index_classes))
+        .route("/admin/courriers/arrives/nouveau", get(ca::new).post(ca::create_courrier))
+        .route("/admin/courriers/arrives/nouveau/confidentiel", get(ca::new_confidentiel).post(ca::create_confidentiel))
+        .route("/admin/courriers/arrives/{id}", get(ca::show))
+        .route("/admin/courriers/arrives/{id}/modifier", get(ca::edit).post(ca::update_courrier))
+        .route("/admin/courriers/arrives/{id}/modifier/cab", get(ca::edit_cab).post(ca::update_cab))
+        .route("/admin/courriers/arrives/{id}/fiche", get(ca::fiche))
+        // Imputations
+        .route("/admin/imputations", get(imp::index))
+        .route("/admin/imputations/classees", get(imp::classees))
+        .route("/admin/imputations/archives", get(imp::archives))
+        .route("/admin/imputations/archives/perso", get(imp::archives_perso))
+        .route("/admin/imputations/nouvelle/{id}", get(imp::new_dircab).post(imp::create_dircab))
+        .route("/admin/imputations/nouvelle/{id}/sc", get(imp::new_sc).post(imp::create_sc))
+        .route("/admin/imputations/transmettre/{id}", get(imp::new_transmission).post(imp::create_transmission))
+        .route("/admin/imputations/{id}", get(imp::show))
+        .route("/admin/imputations/{id}/modifier", get(imp::edit).post(imp::edit_submit))
+        .route("/admin/imputations/{id}/retour", get(imp::retour).post(imp::retour_submit))
+        .route("/admin/imputations/{id}/observation", get(imp::observation).post(imp::observation_submit))
+        .route("/admin/imputations/{id}/document-final", get(imp::document_final).post(imp::document_final_submit))
+        // Espace service
+        .route("/admin/services/{id}", get(destinataire::show))
+        // Fichiers joints (téléchargement contrôlé)
+        .route("/fichiers/{dir}/{name}", get(files::download))
+        .merge(actions)
+        .layer(axum::extract::DefaultBodyLimit::max(files::MAX_UPLOAD + 1024 * 1024))
         .route_layer(middleware::from_fn_with_state(state.clone(), auth::require_admin));
 
     let app = Router::new()

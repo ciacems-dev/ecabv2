@@ -1,0 +1,94 @@
+{# Saisie / modification d'un courrier arrivé (new, newConf, edit : même formulaire _form.html.twig). #}
+{% extends 'layouts/admin.html' %}
+{% block title %}Courrier arrivé{% endblock %}
+{% block body %}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>{{ titre }}</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">courrier arrivé</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-10 offset-1">
+        <div class="card card-default">
+          <div class="card-body">
+            {% if errors %}
+            <div class="alert alert-danger"><ul class="mb-0">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+            {% endif %}
+            <div class="form-group">
+              <form name="carrive" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div><label for="carrive_destinataire" class="required">Destinataire*</label>
+                        <select id="carrive_destinataire" name="destinataire" required class="form-control select2">
+                          {% for d in destinataires %}
+                          <option value="{{ d.id }}" {% if d.id == v.destinataire %}selected{% endif %}>{{ d.libelle }}</option>
+                          {% endfor %}
+                        </select></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div><label for="carrive_confi" class="required">Confidentiel*</label>
+                        <select id="carrive_confi" name="confi" class="form-control">
+                          <option value="1" {% if v.confi %}selected{% endif %}>OUI</option>
+                          <option value="0" {% if not v.confi %}selected{% endif %}>NON</option>
+                        </select></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div><label for="carrive_date" class="required">Date Arrivée*</label>
+                        <input type="date" id="carrive_date" name="date" required class="form-control" value="{{ v.date or '' }}"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div><label for="carrive_numero" class="required">Numéro Courrier*</label>
+                        <input type="number" id="carrive_numero" name="numero" required class="form-control" min="1" value="{{ v.numero or '' }}"></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div><label for="carrive_deposant">Nom du déposant</label>
+                        <input type="text" id="carrive_deposant" name="deposant" class="form-control" value="{{ v.deposant or '' }}"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div><label for="carrive_numcour">téléphone du déposant</label>
+                        <input type="text" id="carrive_numcour" name="numcour" inputmode="numeric" pattern="[0-9]*" class="form-control" value="{{ v.numcour or '' }}"></div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div><label for="carrive_expeditaire" class="required">Expéditeur*</label>
+                        <input type="text" id="carrive_expeditaire" name="expeditaire" required maxlength="255" class="form-control" value="{{ v.expeditaire or '' }}"></div>
+                    </div>
+                    <div class="col-md-6">
+                      <div><label for="carrive_objet">Objet</label>
+                        <textarea id="carrive_objet" name="objet" class="form-control">{{ v.objet or '' }}</textarea></div>
+                    </div>
+                  </div>
+                  <div><label for="carrive_courrier">joint le Courrier*  </label>
+                    <input type="file" id="carrive_courrier" name="courrier" accept="application/pdf,.pdf" class="form-control">
+                    {% if v.courrier %}<small class="form-text text-muted">Fichier actuel : <a href="{{ file_url('courrier_arrives', v.courrier) }}" target="_blank">ouvrir</a>. Choisir un fichier le remplace.</small>{% endif %}
+                  </div>
+                </div>
+                <button class="btn btn-primary">Enregistrer</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

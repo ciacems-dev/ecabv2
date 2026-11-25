@@ -1,0 +1,20 @@
+{% extends 'admin/imputation/_page.html' %}
+{% import 'admin/imputation/_champs.html' as f %}
+{% block title %}Courrier Imputer{% endblock %}
+{% block fields %}
+  <div><label for="imputation_courrier" class="required">Courrier</label>
+    <select id="imputation_courrier" name="courrier" required class="form-control select2">
+      {% for c in courriers %}
+      <option value="{{ c.id }}" {% if c.id == v.courrier %}selected{% endif %}>{{ c.objet }}</option>
+      {% endfor %}
+    </select></div>
+  {{ f.destinataire(v, destinataires) }}
+  {{ f.date('date', "Date d'imputation", v.date) }}
+  {{ f.reponse(v, instructions) }}
+  {{ f.effet(v) }}
+  {{ f.date('delais', "Delais d'exécution ", v.delais) }}
+  {{ f.statut(v) }}
+  {{ f.texte('commentaire', 'Notes', v.commentaire) }}
+  {{ f.texte('etat', "Mon retour sur l'impution", v.etat) }}
+  {{ f.texte('observationdir', 'Observation sur le retour', v.observationdir) }}
+{% endblock %}

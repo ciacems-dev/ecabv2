@@ -1,0 +1,7 @@
+{% extends 'admin/imputation/_page.html' %}
+{% import 'admin/imputation/_champs.html' as f %}
+{% block fields %}
+  {{ f.texte('etat', "Mon retour sur l'impution", v.etat) }}
+  {{ f.fichier('doctoure', 'Retour par fichier') }}
+  {% if imputation.doctoure %}<small class="form-text text-muted">Fichier actuel : <a href="{{ file_url('imputations', imputation.doctoure) }}" target="_blank">ouvrir</a>. Choisir un fichier le remplace.</small>{% endif %}
+{% endblock %}

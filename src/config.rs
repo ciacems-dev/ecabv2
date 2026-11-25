@@ -11,6 +11,10 @@ pub struct Config {
     pub trust_proxy: bool,
     pub templates_dir: String,
     pub static_dir: String,
+    /// Dossier des fichiers joints (sous-dossiers d'origine : courrier_arrives, imputations…).
+    pub uploads_dir: String,
+    /// Navigateur sans interface pour la fiche de suivi PDF (`chromium` dans l'image Docker).
+    pub chrome_bin: String,
 }
 
 fn env_bool(name: &str, default: bool) -> bool {
@@ -31,6 +35,8 @@ impl Config {
             trust_proxy: env_bool("TRUST_PROXY", false),
             templates_dir: std::env::var("TEMPLATES_DIR").unwrap_or_else(|_| "templates".into()),
             static_dir: std::env::var("STATIC_DIR").unwrap_or_else(|_| "static".into()),
+            uploads_dir: std::env::var("UPLOADS_DIR").unwrap_or_else(|_| "uploads".into()),
+            chrome_bin: std::env::var("CHROME_BIN").unwrap_or_else(|_| "chromium".into()),
         })
     }
 }

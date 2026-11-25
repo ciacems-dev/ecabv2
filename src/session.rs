@@ -58,3 +58,28 @@ pub async fn flash(session: &Session, kind: &str, message: impl Into<String>) ->
 pub async fn take_flashes(session: &Session) -> AppResult<Flashes> {
     Ok(session.remove::<Flashes>(FLASHES).await?.unwrap_or_default())
 }
+
+/// Middleware des actions en POST (supprimer, archiver, traité…) envoyées par un formulaire
+/// `application/x-www-form-urlencoded` : vérifie `_csrf_token` avant d'appeler le handler.
+pub async fn require_csrf_form(
+    session: Session,
+    req: axum::extract::Request,
+    next: axum::middleware::Next,
+) -> AppResult<axum::response::Response> {
+    let (parts, body) = req.into_parts();
+    let bytes = axum::body::to_bytes(body, 64 * 1024)
+        .await
+        .map_err(|_| AppError::BadRequest("Requête trop volumineuse."))?;
+    let token = form_urlencoded_value(&bytes, "_csrf_token").unwrap_or_default();
+    verify_csrf(&session, &token).await?;
+    let req = axum::extract::Request::from_parts(parts, axum::body::Body::from(bytes));
+    Ok(next.run(req).await)
+}
+
+fn form_urlencoded_value(body: &[u8], key: &str) -> Option<String> {
+    serde_urlencoded::from_bytes::<Vec<(String, String)>>(body)
+        .ok()?
+        .into_iter()
+        .find(|(k, _)| k == key)
+        .map(|(_, v)| v)
+}

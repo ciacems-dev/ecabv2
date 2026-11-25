@@ -1,0 +1,223 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Courrier arrivé{% endblock %}
+
+{% block body %}
+    
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>courrier imputé</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Courriers </li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+          <!-- /.col -->
+          <div class="col-md-6">
+			 <div class="card card-primary card-outline">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Informations du courrier</a></li>
+                 {% if app.user.destinataire.libelle =="SERVICE COURRIER"  %}
+				 
+				  {% else %}
+				 
+                  {% endif %}
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="activity">
+                    <!-- Post -->
+					
+                     <ul class="list-group list-group-unbordered mb-3">
+					  <li class="list-group-item" align="center">
+                    <b>{{imputation.courrier.objet }}</b> 
+                  </li>
+                  <li class="list-group-item">
+                    <b>Date d'enregistrement du courrier</b> <a class="float-right">{{ imputation.courrier.date|date('d-m-Y') if imputation.courrier.date else '' }} /  
+					N° <b style="color:red"> {{imputation.courrier.numero|slice(4, 5) ~ ''  }}</b></a>
+                  </li>
+                   <li class="list-group-item">
+                    <b>Date d'imputation</b> <a class="float-right">{{ imputation.date|date('d-m-Y') if imputation.date else '' }} 
+					</a>
+                  </li>
+				   <li class="list-group-item">
+                    <b>Expediteur</b> <a class="float-right"> {{imputation.courrier.expeditaire}}</a>
+                  </li>
+                  
+				  
+                  <li class="list-group-item">
+                    <b>Destinataire</b> <a class="float-right"> {{imputation.destinataire.libelle}}</a>
+                  </li>
+                  
+                  <li class="list-group-item">
+                    <b>Instruction </b> : <a class="float-right">{{ imputation.reponse }}</a>
+					{% if imputation.effet %}
+				<span class="badge bg-danger">Extrêmement urgent</span> 
+				{% else %} 
+				<span class="badge badge-info">Urgent</span>
+				{% endif %} 
+                  </li>
+				  <li class="list-group-item">
+                    <b>Statut</b> <a class="float-right">
+					{% if imputation.statut %}
+				<small class="badge badge-success"><i class="far fa-clock"></i> Traité</small>
+				 {% else %}
+				<small class="badge badge-warning"><i class="far fa-clock"></i> Non traité</small>
+				  {% endif %}</a>
+                  </li>
+				  
+				  <li class="list-group-item">
+                    <b>Notes </b> <a class="float-right">{{ imputation.commentaire|sanitize }}</a>
+                  </li>
+				  
+				   <li class="list-group-item">
+                    <b>Etat d'avancement </b> <a class="float-right">{{ imputation.etat|sanitize }}</a>
+                  </li>
+				 
+				  <li class="list-group-item">
+                    <b>Retour courrier </b> <br>  {{ imputation.dateretour|date('Y-m-d H:i:s') if imputation.dateretour else '' }} 
+					{% if imputation.doctoure %}
+					<a class="float-right" href="{{file_url('imputations', imputation.doctoure) }}" target="_blank" ><i class='fas fa-file-pdf' style='font-size:36px'></i></a> 
+					{% endif %} 
+					<a class="float-right" href="{{ path('app_imputation_retour', {'id': imputation.id}) }}">
+					<i class=" fas fa-pencil-alt" ></i>
+					
+					</a>
+                  </li>
+				  <li class="list-group-item">
+                    <b>Observation de la hiérarchie</b> {{ imputation.observationdir|sanitize }} <br> 
+					 {{ imputation.dateobs|date('Y-m-d H:i:s') if imputation.dateobs else '' }} 
+					<a class="float-right" href="{{ path('app_imputation_obs', {'id': imputation.id}) }}" >
+					{% if is_granted("ROLE_SUPER_ADMIN") %}
+					<i class="fas fa-pencil-alt" ></i>
+					{% endif %}
+					
+					</a>
+                  </li>
+				  <li class="list-group-item">  
+                    <b>Document final</b> 
+					{{ imputation.datefinale|date('Y-m-d H:i:s') if imputation.datefinale else '' }} 
+					{% if is_granted("ROLE_SUPER_ADMIN") %}
+					<a class="float-right" href="{{ path('app_final_doc', {'id': imputation.id}) }}">  <i class="fas fa-pencil-alt"></i> </a>
+					{% endif %}
+					{% if imputation.datefinale %}
+					<a class="float-right " href="{{file_url('imputations', imputation.docfinal) }}" target="_blank" ><i class='fas fa-file-pdf' style='font-size:36px'></i></a> 
+				
+					
+						{% endif %} 
+                  </li>
+                </ul>
+                {# {% if is_granted("ROLE_SUPER_ADMIN") %} 
+                <a href="#" class="btn btn-primary btn-block"><b>Mise à jour</b></a>
+                  {% endif %} #}
+                  </div>
+				  
+				   <div class="tab-pane" id="timeline">
+                    <!-- The timeline -->
+                    
+								
+   <div class="card direct-chat direct-chat-warning">
+                  <div class="card-header">
+                    <h3 class="card-title">Parcours du courrier</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <!-- Conversations are loaded here -->
+                    <div class="direct-chat-messages" style="height:520px">
+                      <!-- Message. Default to the left -->
+					 
+					 {% for imput in parcours %}
+					 {% if imput.responsable is not none%}
+                      <div class="direct-chat-msg">
+                        <div class="direct-chat-infos clearfix">
+                          <span class="direct-chat-name float-left">{{imput.destinataire.libelle}}
+						  
+						  
+						 
+						({{imput.responsable.nom}})
+						
+						  </span>
+                          <span class="direct-chat-timestamp float-right">{{ imput.date|date('Y-m-d') if imput.date else '' }}</span>
+                        </div>
+                        <!-- /.direct-chat-infos -->
+						{% if not imput.effet %}
+                        <span title="3 New Messages" class=" direct-chat-img badge badge-warning"> </span>
+						{% else %}
+						<span title="3 New Messages" class=" direct-chat-img badge badge-danger"> </span>
+						{% endif %}
+                        <!-- /.direct-chat-img -->
+                        <div class="direct-chat-text">
+                      <ul>  
+					 <li> {{ imput.reponse }}. {{ imput.commentaire|sanitize }} </li>
+                      
+					    <li>
+						{{imput.etat|sanitize}}
+						 </li>
+						</ul>
+                        </div>
+                        <!-- /.direct-chat-text -->
+                      </div>
+					   {% else %}
+					   
+					 {% endif %}
+					 
+					  {% endfor %}
+                     
+
+                    </div>
+                   
+                  </div>
+                  <!-- /.card-body -->
+                  
+                  <!-- /.card-footer-->
+                </div>
+                  </div>
+                </div>
+                
+              </div><!-- /.card-body -->
+            </div>
+			
+          </div>
+		  <div class="col-md-6">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile" align="right">
+               
+                
+				<a class="btn btn-success" href="{{ path('app_imputation_reimp', {'id': imputation.courrier.id,'responsable': app.user.id}) }}" title="Impatition">Transmet à<i class="fa fa-paper-plane"> </i></a>
+				</br>
+
+               <embed src="{{file_url('courrier_arrives', imputation.courrier.courrier) }}" width="660" height="660" type="application/pdf" class="embed-responsive"/>
+                
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+       
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+   
+{% endblock %}

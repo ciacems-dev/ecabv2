@@ -47,10 +47,47 @@ pub struct CurrentUser {
     pub destinataire: Option<Destinataire>,
 }
 
+pub const SERVICE_COURRIER: &str = "SERVICE COURRIER";
+pub const DIRECTEUR_CABINET: &str = "DIRECTEUR DE CABINET";
+
+/// Droits fins, repris des conditions des templates d'origine (voir docs/regles-courrier-arrive.md),
+/// mais vérifiés côté serveur.
 impl CurrentUser {
     pub fn is_granted(&self, role: &str) -> bool {
         role_granted(&self.roles, role)
     }
+
+    pub fn is_super_admin(&self) -> bool {
+        self.is_granted("ROLE_SUPER_ADMIN")
+    }
+
+    fn service_is(&self, libelle: &str) -> bool {
+        self.destinataire.as_ref().is_some_and(|d| d.libelle == libelle)
+    }
+
+    pub fn destinataire_id(&self) -> Option<i32> {
+        self.destinataire.as_ref().map(|d| d.id)
+    }
+
+    /// Menu « Gestion de Courriers » : service courrier ou super admin.
+    pub fn can_manage_courrier(&self) -> bool {
+        self.is_super_admin() || self.service_is(SERVICE_COURRIER)
+    }
+
+    /// Menu « Imputations » : directeur de cabinet, service courrier ou super admin.
+    pub fn can_manage_imputations(&self) -> bool {
+        self.can_manage_courrier() || self.service_is(DIRECTEUR_CABINET)
+    }
+
+    /// L'imputation est adressée au service de l'utilisateur.
+    pub fn owns(&self, destinataire_id: Option<i32>) -> bool {
+        destinataire_id.is_some() && destinataire_id == self.destinataire_id()
+    }
+}
+
+/// Renvoie `Forbidden` si la condition est fausse.
+pub fn ensure(cond: bool) -> crate::error::AppResult<()> {
+    if cond { Ok(()) } else { Err(AppError::Forbidden) }
 }
 
 #[derive(FromRow)]
@@ -140,8 +177,8 @@ pub struct LoginForm {
 }
 
 pub fn client_ip(state: &AppState, headers: &HeaderMap, peer: SocketAddr) -> String {
-    if state.cfg.trust_proxy {
-        if let Some(ip) = headers
+    if state.cfg.trust_proxy
+        && let Some(ip) = headers
             .get("x-forwarded-for")
             .and_then(|v| v.to_str().ok())
             .and_then(|v| v.split(',').next())
@@ -150,7 +187,6 @@ pub fn client_ip(state: &AppState, headers: &HeaderMap, peer: SocketAddr) -> Str
         {
             return ip.to_string();
         }
-    }
     peer.ip().to_string()
 }
 

@@ -1,0 +1,198 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Courrier arrivée{% endblock %}
+
+{% block body %}
+    
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>courriers arrivés</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Courriers arrivées</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          
+          <!-- /.col -->
+          <div class="col-md-6">
+			 <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Informations du courrier</a></li>
+                 {% if app.user.destinataire.libelle =="SERVICE COURRIER"  %}
+				 
+				  {% else %}
+				 <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Imputation</a></li>
+                  {% endif %}
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="activity">
+                    <!-- Post -->
+                     <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <b>Date d'enregistrement</b> <a class="float-right">{{ carrive.date|date('Y-m-d') if carrive.date else '' }}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Numéro d'enregistrement</b> <a class="float-right">{{ carrive.numero|slice(4, 5) ~ ''  }}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Objet : </b> <a class="float-right"> {{ carrive.objet }} </a>
+                  </li>
+                  
+				  <li class="list-group-item">
+                    <b>Expéditaire du courrier</b> <a class="float-right">{{ carrive.expeditaire }}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Nom et numéro du déposant : </b> <a class="float-right"> {{ carrive.deposant }} / {{ carrive.numcour }}  </a>
+                  </li>
+                   <li class="list-group-item">
+                    <a href="{{ path('app_carrive_edit', {'id': carrive.id}) }}" class="btn btn-success btn-block"><b>Mise à jour</b></a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Imputation au courrier</b> 
+                  </li>
+                  <li class="list-group-item">
+                    <div class="form-group clearfix">
+					{% for imputation in imputations %}
+                      <div class="icheck-primary d-inline">
+                        <input type="checkbox" id="checkboxPrimary1" checked disabled>
+                        <label for="checkboxPrimary1">
+						 {{imputation.destinataire.libelle}}
+                        </label>
+                      </div>
+					  {% endfor %}
+                    </div>
+                  </li>
+	                {#
+				  <li class="list-group-item">
+                    <b>Décharge du courrier</b> <a class="float-right" href="{{file_url('courrier_arrives', carrive.decharge) }}" target="_blank" ><i class='fas fa-file-pdf' style='font-size:36px'></i></a>
+                  </li>#}
+				  
+				  
+                </ul>
+
+               
+                    <!-- /.post -->
+
+              <div class="row">
+                  <div class="col-sm-6">
+                      <h2>  </h2>
+				     </br>
+                    <!-- checkbox -->
+                   
+                  </div>
+                 
+                </div>
+
+                    <!-- /.post -->
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="timeline">
+                    <!-- The timeline -->
+                  
+								
+   <div class="card direct-chat direct-chat-warning">
+                  <div class="card-header">
+                    <h3 class="card-title">Parcours du courrier</h3>
+
+                    
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <!-- Conversations are loaded here -->
+                    <div class="direct-chat-messages" style="height:520px">
+                      <!-- Message. Default to the left -->
+					  {% for imputation in imputations %}
+                      <div class="direct-chat-msg">
+                        <div class="direct-chat-infos clearfix">
+                          <span class="direct-chat-name float-left">{{imputation.destinataire.libelle}}
+						  {% if imputation.responsable is none %}
+						  
+						  {% else %}
+						({{imputation.responsable.nom}})
+						{% endif %}
+						  </span>
+                          <span class="direct-chat-timestamp float-right">{{ imputation.date|date('Y-m-d') if imputation.date else '' }}</span>
+                        </div>
+                        <!-- /.direct-chat-infos -->
+						{% if not imputation.effet %}
+                        <span title="3 New Messages" class=" direct-chat-img badge badge-warning"> </span>
+						{% else %}
+						<span title="3 New Messages" class=" direct-chat-img badge badge-danger"> </span>
+						{% endif %}
+                        <!-- /.direct-chat-img -->
+                        <div class="direct-chat-text">
+                      <ul>  
+					 <li> {{ imputation.reponse }}. {{ imputation.commentaire|sanitize }} </li>
+                      
+					    <li>
+						{{imputation.etat|sanitize}}
+						 </li>
+						</ul>
+                        </div>
+                        <!-- /.direct-chat-text -->
+                      </div>
+					  {% endfor %}
+                     
+
+                    </div>
+                   
+                  </div>
+                  <!-- /.card-body -->
+                  
+                  <!-- /.card-footer-->
+                </div>
+                  </div>
+                  <!-- /.tab-pane -->
+
+                  
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+			
+			
+          </div>
+		  
+		  <div class="col-md-6">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile">
+               
+                {#<h2 class="profile-username text-center"><b>{{carrive.expeditaire}} <a class="btn btn-warning bouton" href="{{ path('app_imputation_dest', {'id': carrive.id}) }}" title="Impatition">Transmet <i class="fa fa-paper-plane"> </i></a></b> </h2>#}
+
+               <embed src="{{file_url('courrier_arrives', carrive.courrier) }}" width="660" height="520" type="application/pdf" class="embed-responsive"/>
+                
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+			
+
+       
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+   
+{% endblock %}

@@ -1,0 +1,193 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion Courrier arrivés{% endblock %}
+
+{% block body %}
+
+<style>
+.bouton{
+    padding: 0.25rem 0.5rem;
+    font-size: .70rem;
+    line-height: 0.7;
+    border-radius: 0.9rem;
+}
+</style>
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Archive des Courriers Arrivés</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Archive</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Les arrivés</h3>
+				<div class="float-right">
+				{#<a class="btn btn-outline-primary" href="{{ path('app_carrive_new') }}" align="right" >Nouveau </a>
+				<a class="btn btn-info" href="{{ path('app_destinataire_index') }}" align="right" >Destinataires </a>#}
+				   </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+			  
+			  {% include 'layouts/includes/alert.html' %}
+			   <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche de diligences par date : </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation" value="{{dates}}"  required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_carrive_archive') }}" align="right" >Touts </a>
+				</form> <br>
+				
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  <th>Numéro</th>
+                    <th>Date d'arriver</th>
+                    
+					
+                    <th>Expéditeur</th>
+                    <th>Objet</th>
+					<th>Courrier</th>
+					
+					<th>Imputation</th>
+					
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  {% for carrive in carrives  %}
+            <tr>
+		 <td style="font-weight:bold;color:red;font-size:14px">{{carrive.numero}}</td>
+               <td>{{ carrive.date|date('Y-m-d') if carrive.date else '' }}</td>
+               
+                
+                <td>{{ carrive.expeditaire }}</td>
+                <td>{{ carrive.objet }}</td>
+               
+                <td> 
+				{% if carrive.courrier %}
+				<a href="{{file_url('courrier_arrives', carrive.courrier) }}" target="_blank" title="Copie Courrier"><i class="fas fa-file-pdf" style=" font-size:24px"></i>
+				{% endif %}
+				</a> 
+				
+				</td>
+              {# <td> 
+				<a align="right" href="{{file_url('courrier_arrives', carrive.decharge)}}" target="_blank"  title="Copie Décharge"><i class="fas fa-server" style="color:red; font-size:24px"></i></a>
+				</td>   #}
+                <td> 
+				{% for dest in carrive.imputations %}
+				-{{dest}}
+				<br>
+				{% endfor %}
+				
+				
+				{#<a class="btn btn-warning btn-sm" href="#" title=""><i class="far fa-user-circle"> </i></a>#}
+				
+			
+				
+				 </td>
+				
+                <td>
+				{#<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg{{carrive.id}}">
+                 <i class="fas fa-folder"></i>
+                </button>
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_carrive_show', {'id': carrive.id}) }}"><i class="fas fa-folder"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_carrive_edit', {'id': carrive.id}) }}"><i class="fas fa-pencil-alt"></i></a>#}
+			   
+				<a class="btn btn-default btn-sm" href="{{ path('app_nonapp_caarchive', {'id': carrive.id}) }}" data-method="post"><i class="fas fa-trash-restore"></i> </a>
+				
+
+				
+                    {#<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': carrive.id}) }}">edit</a>#}
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+   {# <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Datearrive</th>
+                <th>Numero</th>
+                <th>Datecour</th>
+                <th>Numcour</th>
+                <th>Expeditaire</th>
+                <th>Objet</th>
+                <th>Decharge</th>
+                <th>Courrier</th>
+                <th>Create_at</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for carrive in carrives %}
+            <tr>
+                <td>{{ carrive.id }}</td>
+                <td>{{ carrive.datearrive|date('Y-m-d H:i:s') if carrive.datearrive else '' }}</td>
+                <td>{{ carrive.numero }}</td>
+                <td>{{ carrive.datecour|date('Y-m-d') if carrive.datecour else '' }}</td>
+                <td>{{ carrive.numcour }}</td>
+                <td>{{ carrive.expeditaire }}</td>
+                <td>{{ carrive.objet }}</td>
+                <td>{{ carrive.decharge }}</td>
+                <td>{{ carrive.courrier }}</td>
+                <td>{{ carrive.createAt|date('Y-m-d H:i:s') if carrive.createAt else '' }}</td>
+                <td>
+                    <a href="{{ path('app_carrive_show', {'id': carrive.id}) }}">show</a>
+                    <a href="{{ path('app_carrive_edit', {'id': carrive.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+   #}
+{% endblock %}

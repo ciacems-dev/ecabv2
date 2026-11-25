@@ -1,0 +1,215 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion Courrier arrivées{% endblock %}
+
+{% block body %}
+
+<style>
+.bouton{
+    padding: 0.25rem 0.5rem;
+    font-size: .70rem;
+    line-height: 0.7;
+    border-radius: 0.9rem;
+}
+</style>
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-8">
+            <h1>Les courriers arrivées au Cabinet du Ministre</h1>
+          </div>
+          <div class="col-sm-4">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Arrivées</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+               
+				<div class="float-right">
+				
+				<a class="btn btn-outline-primary" href="{{ path('app_courrier_confi') }}" align="right" >Nouveau </a>
+				
+				<a class="btn btn-info" href="{{ path('app_destinataire_index') }}" align="right" >Destinataires </a>
+				   </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+			  
+			  {% include 'layouts/includes/alert.html' %}
+			   <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche  :&nbsp;&nbsp;&nbsp; </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation" value="{{dates}}"  required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_carrive_index') }}" align="right" >Touts </a>
+				</form> <br>
+				
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  <th>N° Courrier</th>
+                   <th>Date</th>
+                    
+					
+                    <th>Expéditeur</th>
+                    <th>Objet</th>
+					<th>Destinataire</th>
+					 
+					<th>Imputation</th>
+					
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  {% for carrive in carrives  %}
+            <tr>
+			<td><span style="color:red; font-weight:bold;font-size:16px">{{ carrive.numero|slice(4, 5) ~ ''  }}</span></td>
+               <td>{{ carrive.date|date('Y-m-d') if carrive.date else '' }}</td>
+                
+                
+                <td>{{ carrive.expeditaire }}</td>
+                <td><a href="{{file_url('courrier_arrives', carrive.courrier) }}" target="_blank" title="Copie Courrier">{{ carrive.objet }}</a> </td>
+                <td>{{ carrive.destinataire.libelle }}
+				{% if carrive.confi %}
+				<small class="badge badge-danger"> confidentiel</small>
+				
+				{% endif %}
+				</td>
+               {# <td> 
+				{% if carrive.courrier %}
+				<a href="{{file_url('courrier_arrives', carrive.courrier) }}" target="_blank" title="Copie Courrier"><i class="fas fa-file-pdf" style=" font-size:24px"></i>
+				{% endif %}
+				</a> 
+				{% if carrive.confi %}
+				<small class="badge badge-danger"> confidentiel</small>
+				
+				{% endif %}
+				</td>#}
+             
+                <td> 
+				<ul>
+				{% for dest in carrive.imputations %}
+				    <li>
+		      	{{dest}}
+		      	 </li>
+				{% endfor %}
+					</ul>
+				
+				{#<a class="btn btn-warning btn-sm" href="#" title=""><i class="far fa-user-circle"> </i></a>#}
+				
+			
+				
+				<a class="btn btn-success bouton" href="{{ path('app_imputation_dest', {'id': carrive.id}) }}" title="Impatition"><i class="fas fa-plus"> </i> </a>
+				
+				
+				
+				{% if carrive.imputations %}
+				<a class="btn btn-warning bouton" target="_blink" href="{{ path('app_export_fiche', {'id': carrive.id}) }}" title="Fiche"><i class="fas fa-pdf"> </i>Fiche de suivi</a>
+				{% else %}
+				Aucune imputation
+				{% endif %}
+				</td>
+				
+                <td>
+				{#<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg{{carrive.id}}">
+                 <i class="fas fa-folder"></i>
+                </button>#}
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_carrive_show', {'id': carrive.id}) }}"><i class="fas fa-eye"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_carrive_editcab', {'id': carrive.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+			   
+			   <a class="btn btn-danger btn-sm" href="{{ path('courrier_deletedircab', {'id': carrive.id}) }}" data-method="post" data-confirm="Voulez-vous supprimer le courrier?"><i class="fas fa-trash"> </i></a>
+			   
+				<a class="btn btn-default btn-sm" href="{{ path('app_caarchive', {'id': carrive.id}) }}" data-method="post"><i class="fas fa-archive"></i> </a>
+				
+
+				
+                    {#<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': carrive.id}) }}">edit</a>#}
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+   {# <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Datearrive</th>
+                <th>Numero</th>
+                <th>Datecour</th>
+                <th>Numcour</th>
+                <th>Expeditaire</th>
+                <th>Objet</th>
+                <th>Decharge</th>
+                <th>Courrier</th>
+                <th>Create_at</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for carrive in carrives %}
+            <tr>
+                <td>{{ carrive.id }}</td>
+                <td>{{ carrive.datearrive|date('Y-m-d H:i:s') if carrive.datearrive else '' }}</td>
+                <td>{{ carrive.numero }}</td>
+                <td>{{ carrive.datecour|date('Y-m-d') if carrive.datecour else '' }}</td>
+                <td>{{ carrive.numcour }}</td>
+                <td>{{ carrive.expeditaire }}</td>
+                <td>{{ carrive.objet }}</td>
+                <td>{{ carrive.decharge }}</td>
+                <td>{{ carrive.courrier }}</td>
+                <td>{{ carrive.createAt|date('Y-m-d H:i:s') if carrive.createAt else '' }}</td>
+                <td>
+                    <a href="{{ path('app_carrive_show', {'id': carrive.id}) }}">show</a>
+                    <a href="{{ path('app_carrive_edit', {'id': carrive.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+   #}
+{% endblock %}

@@ -1,0 +1,139 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion des Utilisateur{% endblock %}
+
+{% block body %}
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Archive des imputations</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Archive</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Les imputations</h3>
+				<div class="float-right">
+				{#<a class="btn btn-outline-primary" href="{{ path('app_imputation_new') }}" align="right" >Nouveau </a>
+				<a class="btn btn-outline-info" href="{{ path('app_carrive_index') }}" align="right" >Courriier Arrivé </a>#}
+				   </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+			   {% include 'layouts/includes/alert.html' %}
+			    <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche de diligences par date : </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation" value="{{dates}}" required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_imputation_archive') }}" align="right" >Touts </a>
+				</form> <br>
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+               
+				<th>Courrier</th>
+				<th>Destinataire</th>
+                <th>Date</th>
+                <th>Instruction</th>
+                <th>Note</th>
+				<th>Etat</th>
+				<th>Rétour</th>
+				 <th>Statut</th>
+                <!-- <th>Commentaire</th> -->
+                
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for imputation in imputations %}
+            <tr>
+			<td>{{ nbr }}</td>
+			 <td>{{ imputation.courrier.objet }} <a href="{{file_url('courrier_arrives', imputation.courrier.courrier) }}" target="_blank" title="Copie du Courrier"><i class="fas fa-file-pdf" style=" font-size:20px; color:red"></i></a></td>
+			<td>{{ imputation.destinataire.libelle }}</td> 
+             
+             <td>{{ imputation.date|date('Y-m-d') if imputation.date else '' }}</td>
+                <td>{{ imputation.reponse }}
+				{% if imputation.effet %}
+				<span class="badge bg-danger">Importance haute</span> 
+				{% else %} 
+				<span class="badge badge-info">Importance faible</span>
+				{% endif %} 
+				</td>
+				<td>{{ imputation.commentaire|sanitize }}</td>
+              
+				<td>{{ imputation.etat|sanitize }}</td>
+				 <td>
+				{% if imputation.doctoure %}
+					
+					 {{ imputation.dateretour|date('Y-m-d H:i:s') if imputation.dateretour else '' }}
+<a class="float-right" href="{{file_url('imputations', imputation.doctoure) }}" target="_blank" ><i class='fas fa-file-pdf' style='font-size:16px'></i></a> 					 
+					{% endif %} 
+				</td>
+                <td>{{ imputation.observationdir|sanitize }} </td>
+                 <td>
+				{% if imputation.statut %}
+				<small class="badge badge-success"> Traité</small>
+				 {% else %}
+				<small class="badge badge-warning"> Non traité</small>
+				  {% endif %}
+				</td>
+               <td> <a class="btn btn-info btn-sm" href="{{ path('app_imputation_show', {'id': imputation.id}) }}"><i class="fas fa-eye"></i>
+			        <a class="btn btn-primary btn-sm" href="{{ path('app_imputation_retour', {'id': imputation.id}) }}"><i class="fas fa-edit"></i>
+					{% if imputation.statut %}
+				<a class="btn btn-default btn-sm" href="{{ path('app_nonapp_imparchive', {'id': imputation.id}) }}" data-method="post"><i class="fas fa-trash-restore"></i> </a>
+				  {% endif %}
+			   </a></td>
+            </tr>
+			   
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun dossier imputé</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+   
+    
+{% endblock %}
