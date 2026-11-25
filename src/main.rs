@@ -78,7 +78,7 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         login_limiter: Arc::new(LoginLimiter::new(5, Duration::from_secs(15 * 60))),
     };
 
-    use handlers::{courrier_arrive as ca, courrier_depart as cd, destinataire, imputation as imp, referentiels as rf, utilisateurs as us};
+    use handlers::{courrier_arrive as ca, courrier_depart as cd, destinataire, imputation as imp, referentiels as rf, utilisateurs as us, cabinet as cab, audiences as aud};
     use axum::routing::post;
 
     // Actions simples (supprimer, archiver, traité…) : POST + jeton CSRF vérifié par middleware.
@@ -90,6 +90,16 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         .route("/admin/courriers/departs/{id}/supprimer", post(cd::delete))
         .route("/admin/courriers/departs/{id}/archiver", post(cd::archive))
         .route("/admin/courriers/departs/{id}/desarchiver", post(cd::unarchive))
+        .route("/admin/comptes-rendus/{id}/supprimer", post(cab::cr_delete))
+        .route("/admin/comptes-rendus/{id}/archiver", post(cab::cr_archive))
+        .route("/admin/comptes-rendus/{id}/desarchiver", post(cab::cr_unarchive))
+        .route("/admin/diligences/{id}/supprimer", post(cab::dil_delete))
+        .route("/admin/diligences/{id}/archiver", post(cab::dil_archive))
+        .route("/admin/diligences/{id}/desarchiver", post(cab::dil_unarchive))
+        .route("/admin/audiences/{id}/accepter", post(aud::accepter))
+        .route("/admin/audiences/{id}/refuser", post(aud::refuser))
+        .route("/admin/audiences/{id}/supprimer", post(aud::delete))
+        .route("/admin/rendez-vous/{id}/supprimer", post(aud::rdv_delete))
         .route("/admin/types-depart/{id}/supprimer", post(rf::type_delete))
         .route("/admin/services/{id}/activer", post(rf::service_activer))
         .route("/admin/services/{id}/desactiver", post(rf::service_desactiver))
@@ -144,6 +154,26 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         .route("/admin/types-depart", get(rf::types_index))
         .route("/admin/types-depart/nouveau", get(rf::type_new).post(rf::type_create))
         .route("/admin/types-depart/{id}/modifier", get(rf::type_edit).post(rf::type_update))
+        // Comptes rendus et diligences
+        .route("/admin/comptes-rendus", get(cab::cr_index))
+        .route("/admin/comptes-rendus/archives", get(cab::cr_archives))
+        .route("/admin/comptes-rendus/nouveau", get(cab::cr_new).post(cab::cr_create))
+        .route("/admin/comptes-rendus/{id}", get(cab::cr_show))
+        .route("/admin/comptes-rendus/{id}/modifier", get(cab::cr_edit).post(cab::cr_update))
+        .route("/admin/diligences", get(cab::dil_index))
+        .route("/admin/diligences/archives", get(cab::dil_archives))
+        .route("/admin/diligences/nouvelle", get(cab::dil_new).post(cab::dil_create))
+        .route("/admin/diligences/nouvelle/{id}", get(cab::dil_new_cr).post(cab::dil_create_cr))
+        .route("/admin/diligences/{id}", get(cab::dil_show))
+        .route("/admin/diligences/{id}/modifier", get(cab::dil_edit).post(cab::dil_update))
+        // Audiences et rendez-vous
+        .route("/admin/audiences", get(aud::index))
+        .route("/admin/audiences/nouvelle", get(aud::new).post(aud::create))
+        .route("/admin/audiences/{id}", get(aud::show))
+        .route("/admin/audiences/{id}/modifier", get(aud::edit).post(aud::update))
+        .route("/admin/rendez-vous", get(aud::rdv_index))
+        .route("/admin/rendez-vous/nouveau", get(aud::rdv_new).post(aud::rdv_create))
+        .route("/admin/rendez-vous/{id}/modifier", get(aud::rdv_edit).post(aud::rdv_update))
         // Comptes
         .route("/admin/utilisateurs", get(us::admins))
         .route("/admin/utilisateurs/membres", get(us::membres))

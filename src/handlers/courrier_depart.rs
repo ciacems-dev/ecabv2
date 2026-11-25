@@ -94,6 +94,16 @@ const SELECT: &str = "SELECT s.id, s.date, s.datesortir, s.numsortir, s.objet, s
      LEFT JOIN destinataire a ON a.id = s.auteur_id
      LEFT JOIN destinataire i ON i.id = s.initiateur_id";
 
+/// Départs filtrés (utilisé par le tableau de bord).
+pub async fn liste(state: &AppState, where_: &str, order: &str) -> AppResult<Vec<Csortir>> {
+    Ok(sqlx::query_as::<_, Row>(&format!("{SELECT} WHERE {where_} ORDER BY {order}"))
+        .fetch_all(&state.db)
+        .await?
+        .into_iter()
+        .map(Csortir::from)
+        .collect())
+}
+
 async fn find(state: &AppState, id: i32) -> AppResult<Csortir> {
     Ok(sqlx::query_as::<_, Row>(&format!("{SELECT} WHERE s.id = $1")).bind(id).fetch_one(&state.db).await?.into())
 }

@@ -1,0 +1,29 @@
+{# Ajout / modification d'une diligence (DiligenceType). #}
+{% extends 'admin/_form_page.html' %}
+{% block title %}Diligence{% endblock %}
+{% block fil %}Diligences{% endblock %}
+{% block fields %}
+<div><label for="dil_titre" class="required">Titre</label>
+  <input type="text" id="dil_titre" name="titre" required maxlength="255" class="form-control" value="{{ v.titre or '' }}"></div>
+<div><label for="dil_libelle">Sujet</label>
+  <textarea id="dil_libelle" name="libelle" class="form-control" rows="3">{{ v.libelle or '' }}</textarea></div>
+<div><label for="dil_ressource" class="required">Ressource(s)</label>
+  <input type="text" id="dil_ressource" name="ressource" required maxlength="255" class="form-control" value="{{ v.ressource or '' }}"></div>
+<div class="row">
+  <div class="col-md-6"><label for="dil_debut">Début exécution</label>
+    <input type="date" id="dil_debut" name="debut" class="form-control" value="{{ v.debut or '' }}"></div>
+  <div class="col-md-6"><label for="dil_delai">Délai exécution</label>
+    <input type="date" id="dil_delai" name="delai" class="form-control" value="{{ v.delai or '' }}"></div>
+</div>
+<div class="row">
+  <div class="col-md-6"><label for="dil_taux">Taux</label>
+    <input type="number" id="dil_taux" name="taux" min="0" max="100" class="form-control" value="{{ v.taux or '' }}"></div>
+  <div class="col-md-6"><label for="dil_etat" class="required">Etat</label>
+    <select id="dil_etat" name="etat" class="form-control">
+      <option value="1" {% if v.etat %}selected{% endif %}>Réaliser</option>
+      <option value="0" {% if not v.etat %}selected{% endif %}>Non Réaliser</option>
+    </select></div>
+</div>
+<div><label for="dil_observation">Observation</label>
+  <textarea id="dil_observation" name="observation" class="form-control" rows="3">{{ v.observation or '' }}</textarea></div>
+{% endblock %}

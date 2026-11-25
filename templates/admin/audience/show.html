@@ -1,0 +1,37 @@
+{# Fiche d'une audience (le template d'origine utilisait le gabarit Symfony vide). #}
+{% extends 'layouts/admin.html' %}
+{% block title %}Audience{% endblock %}
+{% block body %}
+<section class="content-header"><div class="container-fluid"><h1>Audience</h1></div></section>
+<section class="content">
+  <div class="container-fluid">
+    <div class="card"><div class="card-body">
+      {% include 'layouts/includes/alert.html' %}
+      <table class="table">
+        <tbody>
+          <tr><th>Date</th><td>{{ audience.date|date('Y-m-d') }} {{ audience.heure|date('H:i') if audience.heure else '' }}</td></tr>
+          <tr><th>Nom</th><td>{{ audience.nom }}</td></tr>
+          <tr><th>Service</th><td>{{ audience.service }}</td></tr>
+          <tr><th>Qualité</th><td>{{ audience.qualite }}</td></tr>
+          <tr><th>Téléphone</th><td>{{ audience.telephone }}</td></tr>
+          <tr><th>Email</th><td>{{ audience.email }}</td></tr>
+          <tr><th>Destinataire</th><td>{{ audience.destinataire.libelle }}</td></tr>
+          <tr><th>Rendez-vous</th><td>{{ 'Oui' if audience.rdv else 'Non' }}</td></tr>
+          <tr><th>Objet</th><td>{{ audience.objet|sanitize }}</td></tr>
+          <tr><th>Statut</th><td>{% if audience.statut %}<small class="badge badge-success">Accepté</small>{% else %}<small class="badge badge-danger">Refusé</small>{% endif %}</td></tr>
+          <tr><th>Commentaire</th><td>{{ audience.commentaire }}</td></tr>
+        </tbody>
+      </table>
+      <a class="btn btn-default" href="{{ path('app_audience_index') }}">Retour à la liste</a>
+      <a class="btn btn-info" href="{{ path('app_audience_edit', {'id': audience.id}) }}">Modifier</a>
+      {% if is_granted("ROLE_SUPER_ADMIN") %}
+        {% if audience.statut %}
+        <a class="btn btn-warning" href="{{ path('app_nonconfirme', {'id': audience.id}) }}" data-method="post" data-confirm="Refuser cette audience ?">Refuser</a>
+        {% else %}
+        <a class="btn btn-success" href="{{ path('app_confirme', {'id': audience.id}) }}" data-method="post" data-confirm="Accepter cette audience ?">Accepter</a>
+        {% endif %}
+      {% endif %}
+    </div></div>
+  </div>
+</section>
+{% endblock %}

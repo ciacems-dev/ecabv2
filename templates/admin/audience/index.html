@@ -1,0 +1,138 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion des diligences{% endblock %}
+
+{% block body %}
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Les Audiences</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Audiences</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Audiences</h3>
+				<div class="float-right">
+				<a class="btn btn-outline-primary" href="{{ path('app_audience_new') }}" align="right" >Nouveau </a>
+				<a class="btn btn-info" href="{{ path('app_rendvous_index') }}" align="right" >Rvd Accordés </a>
+				   </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+				{% include 'layouts/includes/alert.html' %}
+			  <!-- Date range -->
+			  <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche de Audiences par date : </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation"  required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_audience_index') }}" align="right" >Touts </a>
+				</form>
+				<br>
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                <th>#</th>
+				<th>Date heure</th>
+				<th>Nom et Prénoms</th>
+				{#<th>Service</th>#}
+				<th>Qualité</th>
+				<th>RDV</th>
+				 <th>Destinataire</th>
+				<th>Statut</th>
+                <!-- <th>Commentaire</th> -->
+                
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+            {% for audience in audiences  %}
+			
+            <tr>
+			<td>{{ loop.index }}</td>
+			<td>
+			
+			{{ audience.date|date('Y-m-d') if audience.date else '' }} pour {{ audience.heure|date('h:i') if audience.heure else '' }}
+			 
+			</td>
+			<td> {{ audience.nom}}</td>
+			 {#<td> {{ audience.service}}</td>#}
+			 <td>{{ audience.qualite }}</td>
+			 <td>{{ 'Oui' if audience.rdv else 'Non' }}</td>
+              <td>{{ audience.destinataire.libelle }}</td>
+              <td>
+			  {% if audience.statut %}
+               
+			  <a href="{{ path('app_nonconfirme', {'id': audience.id}) }}" data-method="post" data-confirm="Refuser cette audience ?" title="Refuser"><small class="badge badge-success">
+			<i class="icon fas fa-check"></i> Accepté!</small></a>
+			  {% else %}
+			   <a href="{{ path('app_confirme', {'id': audience.id}) }}" data-method="post" data-confirm="Accepter cette audience ?" title="Accepter"><small class="badge badge-danger">
+			<i class="icon fas fa-check"></i> Refuser!</small></a>
+			 {% endif %} 
+			  </td>
+			  
+                <td>
+				
+				
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_audience_show', {'id': audience.id}) }}"><i class="fas fa-eye"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_audience_edit', {'id': audience.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				
+				
+			    {% if is_granted("ROLE_SUPER_ADMIN") %}<a class="btn btn-danger btn-sm" href="{{ path('app_audience_delete', {'id': audience.id}) }}" data-method="post" data-confirm="Voulez-vous supprimer cette audience ?"><i class="fas fa-trash"> </i></a>{% endif %}
+				
+				
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucune audience n'est renseignée</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  
+	  </section>
+    
+    <a href="{{ path('app_audience_new') }}">Create new</a>
+{% endblock %}

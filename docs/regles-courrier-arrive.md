@@ -25,7 +25,8 @@ libellé exact ; voir docs/regles-comptes-referentiels.md, « Profil des service
 | Vue « Dircab » (inclut les confidentiels), saisie depuis cette vue | ✔ | ✘ | ✔ | ✘ |
 | Voir / télécharger un courrier **confidentiel** | ✔ | ✘ | ✔ | ✘ |
 | Imputer un courrier (depuis « Arrivées ») | ✔ | ✔ | ✔ | ✘ |
-| Listes des imputations, modifier, supprimer, traité / non traité | ✔ | ✔ | ✔ | ✘ |
+| Listes des imputations, modifier, supprimer | ✔ | ✔ | ✔ | ✘ |
+| Marquer traité / non traité | ✔ | ✔ | ✔ | si imputée à son service (depuis son tableau de bord) |
 | Observation de la hiérarchie, document final | ✔ | ✘ | ✔ | ✘ |
 | Voir une imputation | ✔ | ✔ | ✔ | si imputée à son service ou transmise par lui |
 | Répondre (retour + fichier) | ✔ | ✔ | ✔ | si imputée à son service |

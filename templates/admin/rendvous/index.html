@@ -1,0 +1,42 @@
+{# Rendez-vous accordés (le template d'origine utilisait le gabarit Symfony vide). #}
+{% extends 'layouts/admin.html' %}
+{% block title %}Rendez-vous{% endblock %}
+{% block body %}
+<section class="content-header"><div class="container-fluid"><h1>Rendez-vous accordés</h1></div></section>
+<section class="content">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header">
+        <div class="float-right">
+          <a class="btn btn-outline-primary" href="{{ path('app_rendvous_new') }}">Nouveau</a>
+          <a class="btn btn-info" href="{{ path('app_audience_index') }}">Audiences</a>
+        </div>
+      </div>
+      <div class="card-body">
+        {% include 'layouts/includes/alert.html' %}
+        <table id="example1" class="table table-bordered table-striped">
+          <thead><tr><th>Date</th><th>Date fin</th><th>Heure début</th><th>Heure fin</th><th>Imputation budget</th><th>Message</th><th>Actions</th></tr></thead>
+          <tbody>
+          {% for rendvou in rendvouses %}
+            <tr>
+              <td>{{ rendvou.date|date('Y-m-d') if rendvou.date else '' }}</td>
+              <td>{{ rendvou.datefin|date('Y-m-d') if rendvou.datefin else '' }}</td>
+              <td>{{ rendvou.heured|date('H:i') if rendvou.heured else '' }}</td>
+              <td>{{ rendvou.heuref|date('H:i') if rendvou.heuref else '' }}</td>
+              <td>{{ rendvou.lieu }}</td>
+              <td>{{ rendvou.message|sanitize }}</td>
+              <td>
+                <a class="btn btn-info btn-sm" href="{{ path('app_rendvous_edit', {'id': rendvou.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+                <a class="btn btn-danger btn-sm" href="{{ path('app_rendvous_delete', {'id': rendvou.id}) }}" data-method="post" data-confirm="Supprimer ce rendez-vous ?"><i class="fas fa-trash"></i></a>
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="7">Aucun rendez-vous</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

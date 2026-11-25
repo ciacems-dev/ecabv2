@@ -123,6 +123,21 @@ impl CurrentUser {
         self.profil_is(Profil::Etudes)
     }
 
+    /// Comptes rendus et diligences : chargé d'études ou super admin.
+    pub fn can_manage_cabinet(&self) -> bool {
+        self.is_super_admin() || self.is_charge_etudes()
+    }
+
+    /// Profil accueil (saisie des audiences depuis sa page d'accueil).
+    pub fn is_accueil(&self) -> bool {
+        self.profil_is(Profil::Accueil)
+    }
+
+    /// Audiences et rendez-vous : super admin ou accueil.
+    pub fn can_manage_audiences(&self) -> bool {
+        self.is_super_admin() || self.is_accueil()
+    }
+
     /// L'imputation est adressée au service de l'utilisateur.
     pub fn owns(&self, destinataire_id: Option<i32>) -> bool {
         destinataire_id.is_some() && destinataire_id == self.destinataire_id()

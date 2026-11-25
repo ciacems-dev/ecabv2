@@ -73,6 +73,38 @@ pub fn pattern(name: &str) -> Option<&'static str> {
         "app_typedepart_edit" => "/admin/types-depart/{id}/modifier",
         "app_type_delete" => "/admin/types-depart/{id}/supprimer",
 
+        // Comptes rendus et diligences
+        "app_compterendu_index" => "/admin/comptes-rendus",
+        "app_compterendu_archive" => "/admin/comptes-rendus/archives",
+        "app_compterendu_new" => "/admin/comptes-rendus/nouveau",
+        "app_compterendu_show" => "/admin/comptes-rendus/{id}",
+        "app_compterendu_edit" => "/admin/comptes-rendus/{id}/modifier",
+        "app_crdelete" => "/admin/comptes-rendus/{id}/supprimer",
+        "app_crarchive" => "/admin/comptes-rendus/{id}/archiver",
+        "app_nonapp_crarchive" => "/admin/comptes-rendus/{id}/desarchiver",
+        "app_diligence_index" => "/admin/diligences",
+        "app_diligence_archive" => "/admin/diligences/archives",
+        "app_diligence_new" => "/admin/diligences/nouvelle",
+        "app_diligence_cr" => "/admin/diligences/nouvelle/{id}",
+        "app_diligence_show" => "/admin/diligences/{id}",
+        "app_diligence_edit" => "/admin/diligences/{id}/modifier",
+        "diligence_delete" => "/admin/diligences/{id}/supprimer",
+        "app_dilarchive" => "/admin/diligences/{id}/archiver",
+        "app_nonapp_dilarchive" => "/admin/diligences/{id}/desarchiver",
+
+        // Audiences et rendez-vous
+        "app_audience_index" => "/admin/audiences",
+        "app_audience_new" => "/admin/audiences/nouvelle",
+        "app_audience_show" => "/admin/audiences/{id}",
+        "app_audience_edit" => "/admin/audiences/{id}/modifier",
+        "app_confirme" => "/admin/audiences/{id}/accepter",
+        "app_nonconfirme" => "/admin/audiences/{id}/refuser",
+        "app_audience_delete" => "/admin/audiences/{id}/supprimer",
+        "app_rendvous_index" => "/admin/rendez-vous",
+        "app_rendvous_new" => "/admin/rendez-vous/nouveau",
+        "app_rendvous_edit" => "/admin/rendez-vous/{id}/modifier",
+        "app_rendvous_delete" => "/admin/rendez-vous/{id}/supprimer",
+
         // Comptes
         "app_user_admin" => "/admin/utilisateurs",
         "app_user_membre" => "/admin/utilisateurs/membres",

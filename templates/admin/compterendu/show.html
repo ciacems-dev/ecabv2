@@ -1,0 +1,175 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Compte rendu{% endblock %}
+
+{% block body %}
+    
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Compte rendu du {{ compterendu.date|date('Y-m-d') if compterendu.date else '' }}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Courriers </li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	
+	
+	<!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-7">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile">
+               
+                <h2 class="profile-username text-center"><b>CR {{ compterendu.date|date('Y-m-d') if compterendu.date else '' }} de {{ compterendu.debut|date('H:i') if compterendu.debut else '' }} à {{ compterendu.fin|date('H:i') if compterendu.fin else '' }}</b></h2>
+
+               <embed src="{{file_url('cr', compterendu.cr) }}" width="590" height="500" type="application/pdf" class="embed-responsive"/>
+                
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+       
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-5">
+			 <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Informations </a></li>
+                 
+                 
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="activity">
+                    <!-- Post -->
+                     <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <b>Lieu</b> <a class="float-right">{{ compterendu.lieu }}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Présidence</b> <a class="float-right">{{ compterendu.presidence }}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Rédacteur</b> <a class="float-right">{{ compterendu.redacteur }}</a>
+                  </li>
+				  
+				  <li class="list-group-item">
+                    <b>Liste de présence</b> <a class="float-right" href="{{file_url('cr', compterendu.listep) }}" target="_blank" ><i class='fas fa-file-pdf' style='font-size:36px'></i></a>
+                  </li>
+                </ul>
+
+                <a href="#" class="btn btn-primary btn-block"><b>Mise à jour</b></a>
+                    <!-- /.post -->
+
+             
+
+                    <!-- /.post -->
+                  </div>
+                  <!-- /.tab-pane -->
+                
+                  <!-- /.tab-pane -->
+
+                  
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+   <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+         
+          <!-- /.col -->
+          <div class="col-md-12">
+			 <div class="card">
+              <div class="card-header p-2">
+                <h2><b> Diligence(s)</b></h2>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+              
+                 
+                   
+					
+					  
+                 <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                <th>#</th>
+				
+				<th>Libellé</th>
+				<th>Réssource</th>
+                <th>Début d'execution</th>
+				<th>Fin d'execution</th>
+				 <th>Etat</th>
+				<th>Observation</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+             {% for diligence in compterendu.diligence %}
+            <tr>
+			<td>{{ loop.index }}</td>
+			
+			<td><b>{{ diligence.titre }} </b><br> {{ diligence.libelle|sanitize }}</td>
+			  <td>{{ diligence.ressource }}</td>
+			<td>{{ diligence.debut|date('Y-m-d') if diligence.debut else '' }}</td>
+              <td>{{ diligence.delai|date('Y-m-d') if diligence.delai else '' }}</td>
+               <td>
+				{% if diligence.etat %}
+				<small class="badge badge-success"><i class="far fa-clock"></i> Réaliser</small><br>
+				
+				 {% else %}
+				<small class="badge badge-danger"><i class="far fa-clock"></i> Non Réaliser</small>
+				  {% endif %}
+				</td>
+			   <td>{{ diligence.observation|sanitize }}</td> 
+				</tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucune Diligence n'est renseignée</td>
+            </tr>
+				  {% endfor %}
+				  
+				  </tbody>
+                </table>
+            
+                     
+                    </div>
+                 
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+{% endblock %}

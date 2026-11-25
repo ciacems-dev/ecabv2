@@ -29,6 +29,7 @@ pub fn build(templates_dir: &str) -> Environment<'static> {
     env.add_filter("date", date_filter);
     env.add_filter("slice", slice_filter);
     env.add_filter("sanitize", sanitize_filter);
+    env.add_filter("number_format", number_format_filter);
     env.add_function("file_url", |dir: String, name: Option<String>| {
         Value::from_safe_string(name.filter(|n| !n.is_empty()).map(|n| crate::files::url(&dir, &n)).unwrap_or_default())
     });
@@ -173,6 +174,28 @@ fn slice_filter(value: Value, start: i64, length: Option<i64>) -> String {
     chars[start..end].iter().collect()
 }
 
+/// `number_format(decimales, separateur_decimal, separateur_milliers)` comme Twig / PHP.
+fn number_format_filter(value: Value, decimals: Option<usize>, dec_point: Option<String>, thousands: Option<String>) -> String {
+    if value.is_undefined() || value.is_none() {
+        return "0".into();
+    }
+    let n: f64 = f64::try_from(value.clone()).ok().or_else(|| value.to_string().trim().parse().ok()).unwrap_or(0.0);
+    let decimals = decimals.unwrap_or(0);
+    let dec_point = dec_point.unwrap_or_else(|| ".".into());
+    let thousands = thousands.unwrap_or_else(|| ",".into());
+    let fixed = format!("{:.*}", decimals, n.abs());
+    let (int_part, frac_part) = fixed.split_once('.').unwrap_or((&fixed, ""));
+    let mut grouped = String::new();
+    for (i, c) in int_part.chars().enumerate() {
+        if i > 0 && (int_part.len() - i) % 3 == 0 {
+            grouped.push_str(&thousands);
+        }
+        grouped.push(c);
+    }
+    let sign = if n < 0.0 && fixed.chars().any(|c| c != '0' && c != '.') { "-" } else { "" };
+    if frac_part.is_empty() { format!("{sign}{grouped}") } else { format!("{sign}{grouped}{dec_point}{frac_part}") }
+}
+
 /// Remplace `|raw` de l'original : garde la mise en forme (paragraphes, gras, listes…)
 /// mais retire scripts, attributs d'événements et liens `javascript:`.
 fn sanitize_filter(value: Value) -> Value {
@@ -197,6 +220,14 @@ mod tests {
     fn slice_chars() {
         assert_eq!(slice_filter(Value::from("MINISTÈRE DE L'ÉCONOMIE"), 0, Some(10)), "MINISTÈRE ");
         assert_eq!(slice_filter(Value::from(()), 0, Some(10)), "");
+    }
+
+    #[test]
+    fn number_format() {
+        assert_eq!(number_format_filter(Value::from(66.6), Some(0), Some(".".into()), Some(",".into())), "67");
+        assert_eq!(number_format_filter(Value::from(1234567.891), Some(2), Some(",".into()), Some(" ".into())), "1 234 567,89");
+        assert_eq!(number_format_filter(Value::from("50"), None, None, None), "50");
+        assert_eq!(number_format_filter(Value::from(()), Some(0), None, None), "0");
     }
 
     #[test]

@@ -700,12 +700,12 @@ async fn set_field(
 }
 
 pub async fn traite(State(s): State<AppState>, se: Session, Extension(u): Extension<CurrentUser>, Path(id): Path<i32>, h: HeaderMap) -> AppResult<Response> {
-    set_field(&s, &u, id, "statut", true, false).await?;
+    set_field(&s, &u, id, "statut", true, true).await?;
     flash(&se, "success", "Dossier traité avec succès").await?;
     Ok(redirect_back(&h, "/admin/imputations"))
 }
 pub async fn non_traite(State(s): State<AppState>, se: Session, Extension(u): Extension<CurrentUser>, Path(id): Path<i32>, h: HeaderMap) -> AppResult<Response> {
-    set_field(&s, &u, id, "statut", false, false).await?;
+    set_field(&s, &u, id, "statut", false, true).await?;
     flash(&se, "warning", "Dossier non traité").await?;
     Ok(redirect_back(&h, "/admin/imputations"))
 }

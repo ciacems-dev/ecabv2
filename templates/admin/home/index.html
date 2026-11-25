@@ -1,52 +1,740 @@
-{# TEMPORAIRE : seuls les compteurs du tableau de bord d'origine sont portés.
-   Le reste (listes de courriers, CR, diligences, audiences) arrive avec les modules métier. #}
+
 {% extends 'layouts/admin.html' %}
 
-{% block title %}Accueil | ECAB-MS{% endblock %}
+{% block title %}ECAB-MS {%endblock %}
 
-{% block body %}
-<div class="content-wrapper">
-  <div class="content-header">
-    <div class="container-fluid">
-      <h1 class="m-0">Tableau de bord</h1>
+
+
+{% block body %} 
+  
+  <!-- Content Wrapper. Contains page content -->
+
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">TABLEAU DE BORD</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Accueil</a></li>
+              <li class="breadcrumb-item active">Tableau de Bord</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
     </div>
-  </div>
-  <section class="content">
-    <div class="container-fluid">
-      {% include 'layouts/includes/alert.html' %}
-      <div class="row">
-        <div class="col-lg-4 col-6">
-          <div class="small-box bg-success">
-            <div class="inner">
-              <h3>{{ nbarrive }}</h3>
-              <p>Courrier arrivée(s)</p>
+    <!-- /.content-header -->
+	{% if app.user.destinataire.profil != "accueil" %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+	
+        <div class="row">
+		
+     
+          <!-- ./col -->
+          {% if  is_granted("ROLE_SUPER_ADMIN")  %} 
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>{{nbarrive}}</h3>
+
+                <p>Courrier arrivée(s)</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+               {% if is_granted("ROLE_SUPER_ADMIN") %}<a href="{{ path('app_carrive_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>{% endif %}
             </div>
-            <div class="icon"><i class="ion ion-email"></i></div>
-            {% if is_granted("ROLE_SUPER_ADMIN") %}<a href="{{ path('app_carrive_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>{% endif %}
           </div>
-        </div>
-        <div class="col-lg-4 col-6">
-          <div class="small-box bg-warning">
-            <div class="inner">
-              <h3>{{ nbsorti }}</h3>
-              <p>Courrier  départ(s)</p>
+          <!-- ./col -->
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>{{nbsorti}}</h3>
+
+                <p>Courrier  départ(s)</p>
+              </div>
+              <div class="icon">
+			  <i class="ion ion-bag"></i>
+              {#<i class="ion ion-person-add"></i>#}
+              </div>
+             {% if is_granted("ROLE_SUPER_ADMIN") %} 
+             <a href="{{ path('app_csortir_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>
+             {% endif %}
             </div>
-            <div class="icon"><i class="ion ion-paper-airplane"></i></div>
-            <a href="{{ path('app_csortir_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>
           </div>
-        </div>
-        <div class="col-lg-4 col-6">
-          <div class="small-box bg-danger">
-            <div class="inner">
-              <h3>{{ nbcomptr }}</h3>
-              <p>Comptes rendus</p>
+          <!-- ./col -->
+          <div class="col-lg-4 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{nbcomptr}}</h3>
+
+                <p>Comptes rendus</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              {% if is_granted("ROLE_SUPER_ADMIN") %} <a href="{{ path('app_compterendu_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>{% endif %}
             </div>
-            <div class="icon"><i class="ion ion-document-text"></i></div>
-            {% if is_granted("ROLE_SUPER_ADMIN") %}<a href="{{ path('app_compterendu_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>{% endif %}
           </div>
+          <!-- ./col -->
         </div>
-      </div>
-    </div>
-  </section>
-</div>
-{% endblock %}
+	 {% endif %}
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+          <!-- Left col -->
+         
+          <!-- /.Left col -->
+          <!-- right col (We are only adding the ID to make the widgets sortable)-->
+		  {% if app.user.destinataire.profil != "courrier" %}
+          <section class="col-lg-12 connectedSortable">
+          <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+				 {#<li class="nav-item"><a class="nav-link active" href="#ca" data-toggle="tab">Courrier arrivés</a></li>#}
+                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Dossiers imputés {{annee}}</a></li>
+				 {# <li class="nav-item"><a class="nav-link " href="#depart" data-toggle="tab">Mes Courriers dpart(s) initiés au Cabinet </a></li>#}
+                  <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Les Comptes Rendus {{annee}}</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#diligence" data-toggle="tab">Les Diligences {{annee}}</a></li>
+				 {# <li class="nav-item"><a class="nav-link" href="#mission" data-toggle="tab">Les Missions</a></li>#}
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+				 
+                  <div class="active tab-pane" id="activity">
+                    <!-- Post -->
+                     <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                   <th>N°</th>
+                 <th>Date</th>
+				<th>Courrier</th>
+				<th>Expediteur</th>
+              	<th>Delai de traitement</th>
+                <th>Instruction</th>
+				<th>Note</th>
+				<th>Etat</th>
+			{#	<th>Rendu</th>
+				<th>Observation</th>#}
+			
+                <!-- <th>Commentaire</th> -->
+                <th>#</th>
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for imputation in imputations %}
+           
+            <tr>
+            <td ><span style="color:red; font-weight:bold;font-size:16px">{{ imputation.courrier.numero|slice(4, 5) ~ ''  }}</span></td>
+		<td>{{ imputation.date|date('Y-m-d') if imputation.date else '' }}</td>
+			 <td> <span style="font-weight:bold;font-size:14px;">{{ imputation.courrier.objet }} </span><a href="{{file_url('courrier_arrives', imputation.courrier.courrier) }}" target="_blank" title="Copie du Courrier"><i class="fas fa-file-pdf" style=" font-size:20px; color:red"></i></a></td>
+			<td>{{ imputation.courrier.expeditaire }}</td> 
+              
+              
+              	{% if imputation.dans_les_delais %}
+				 <td style="background-color:#e0ffff">
+				 {% if imputation.statut %}
+				 <a  href="{{ path('app_nontraite', {'id': imputation.id}) }}" data-method="post" data-method="post" title="Non Valider"><small class="badge badge-success"> Traité</small></a>
+				 {% else %}
+				<a  href="{{ path('app_traite', {'id': imputation.id}) }}" data-method="post" data-method="post" title="Valider"><small class="badge badge-warning"> Non traité</small></a>
+				  {% endif %}
+				 {{ imputation.delais|date('d-m-Y') if imputation.delais else '' }}
+				 </td>
+				 
+				 {% else %}
+				 
+				 
+				  <td style="background-color:#ffb6c1">
+				 {% if imputation.statut %}
+				 <a  href="{{ path('app_nontraite', {'id': imputation.id}) }}" data-method="post" data-method="post" title="Non Valider"><small class="badge badge-success"> Traité</small></a>
+				 {% else %}
+				<a  href="{{ path('app_traite', {'id': imputation.id}) }}" data-method="post" data-method="post" title="Valider"><small class="badge badge-warning"> Non traité</small></a>
+				  {% endif %}
+				 {{ imputation.delais|date('d-m-Y') if imputation.delais else '' }}
+				 
+				 </td>
+				  {% endif %}
+            
+             
+                <td>{{ imputation.reponse }}
+				{% if imputation.effet %}
+				<span class="badge bg-danger">Extrmement urgent</span> 
+				{% else %} 
+				<span class="badge badge-info">Urgent</span>
+				{% endif %} 
+				</td>
+				<td>{{ imputation.commentaire|sanitize }}</td>
+              
+				<td>{{ imputation.etat|sanitize }}</td>
+			{# 	 <td>
+				{% if imputation.doctoure %}
+					
+					 {{ imputation.dateretour|date('Y-m-d H:i:s') if imputation.dateretour else '' }}
+<a class="float-right" href="{{file_url('imputations', imputation.doctoure) }}" target="_blank" ><i class='fas fa-file-pdf' style='font-size:16px'></i></a> 					 
+					{% endif %} 
+				</td>
+               <td>{{ imputation.observationdir|sanitize }} </td>#}
+                
+               <td> <a class="btn btn-info btn-sm" href="{{ path('app_imputation_show', {'id': imputation.id}) }}"><i class="fas fa-eye"></i>
+			       {# <a class="btn btn-primary btn-sm" href="{{ path('app_imputation_retour', {'id': imputation.id}) }}"><i class="fas fa-edit"></i>#}
+					{% if imputation.statut %}
+				<a class="btn btn-default btn-sm" href="{{ path('app_imparchive', {'id': imputation.id}) }}" data-method="post" data-method="post"><i class="fas fa-archive"></i> </a>
+				  {% endif %}
+			   </a></td>
+            </tr>
+			   
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun dossier imputé</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+
+               
+
+                    <!-- /.post -->
+                  </div>
+                  <!-- /.tab-pane -->
+				  
+				    {# <div class="active tab-pane" id="depart">
+                    <!-- Post -->
+                     <table id="example5" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+               	<th>Date</th>
+				<th>Numéro</th>
+				<th>Type</th> 
+				<th>Objet</th>
+				<th>Signataire</th>
+				<th>Destinataire</th>
+                <th>Agent de depôt</th>
+                <!-- <th>Commentaire</th> -->
+                <th>Décharge</th>
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for csortir in app.user.destinataire.depart %}
+		    {% if not csortir.archive and csortir.date|date('Y')==annee %}
+            <tr>
+				<td>{{ csortir.date|date('Y-m-d') if csortir.date else '' }}</td>
+			  <td> <span style="color:red; font-weight:bold;font-size:16px">{{ csortir.numsortir }}</span></td>
+		
+			<td>{{ csortir.type.libelle }}</td>
+			 <td>{{ csortir.objet }} <a href="{{file_url('courrier_sortis', csortir.courrier) }}" target="_blank" > <i class="fas fa-file-pdf" style=" font-size:15px"></i></a></td>
+             <td>{{ csortir.auteur.libelle }}</td>
+			 <td>{{ csortir.destinataire }}</td>
+			 <td>{{ csortir.agent }}</td>
+              <td>
+				{% if   csortir.decharge is not none%}
+				<a href="{{file_url('courrier_sortis', csortir.decharge) }}" target="_blank" ><small class="badge badge-success">
+				<i class="far fa-clock" style=" font-size:15px"></i> Transmis <i class="fas fa-file-pdf" style=" font-size:15px"></i></small><br>
+				
+				  </a>
+				
+				
+				 {% else %}
+				
+				  <small class="badge badge-danger"><i class="far fa-clock"></i>Non transmis </small>
+				
+				  {% endif %}
+				</td>
+            </tr>
+			  {% endif %} 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun Compte rendu/td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+
+               
+
+                    <!-- /.post -->
+                  </div>
+				  
+			#}	  
+                  <div class="tab-pane" id="timeline">
+                    <!-- The timeline -->
+                    
+                      <table id="example3" class="table table-bordered table-striped">
+                  <thead>
+                  
+				  
+                   <tr>
+              
+				<th>Date Heure</th>
+				<th>Objet</th>
+				<th>Présidence</th>
+				 <th>Rédacteur</th>
+				<th>Fichier</th>
+                <th>Liste de présence</th>
+               
+                <th>Diligences</th>
+                
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for compterendu in compterendus %}
+            <tr>
+		
+			<td>{{ compterendu.date|date('Y-m-d') if compterendu.date else '' }} de {{ compterendu.debut|date('H:i') if compterendu.debut else '' }} à {{ compterendu.fin|date('H:i') if compterendu.fin else '' }}</td>
+			 <td>{{ compterendu.objet }}</td>
+			 <td>{{ compterendu.presidence }}</td>
+			  <td>{{ compterendu.redacteur }}</td>
+			<td><a href="{{file_url('cr', compterendu.cr) }}" target="_blank" ><i class="fas fa-file-pdf" style=" font-size:20px; color:red"></i></a></td>
+            
+            
+             <td> 
+             {% if  compterendu.listep %}
+             <a href="{{file_url('cr', compterendu.listep) }}" target="_blank" >Voir la liste de présence</a> 
+             {% endif %} 
+             </td>
+			       
+             <td> 
+			  {% for diligence in compterendu.diligence %}
+			  
+			  {% else %}
+			  
+			   {% endfor %}
+			    <a class="btn btn-primary btn-sm" href="{{ path('app_compterendu_show', {'id': compterendu.id}) }}"> {{ compterendu.diligence|length }} </a>
+			  
+			 </td>
+                
+               
+            </tr>
+			  
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun Compte Rendu</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+                    
+                  </div>
+				   <div class="tab-pane" id="diligence">
+                    <!-- The timeline -->
+                    
+                      <table id="example4" class="table table-bordered table-striped">
+                  <thead>
+                  
+				  
+                   <tr>
+                
+              
+				<th>CR</th>
+				<th>Libelle</th>
+				<th>Rssource</th>
+				<th>Début d'execution</th>
+				<th>Fin d'execution</th>
+				 <th>Etat</th>
+				<th>Observation</th>
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for diligence in diligences %}
+		  
+            <tr>
+			
+			<td>{% if diligence.cr is none %}
+			{{ diligence.debut|date('Y-m-d') if diligence.debut else '' }}
+			 {% else %}
+			CR_DU_{{ diligence.cr.date|date('Y-m-d') if diligence.cr.date else '' }}
+			 {% endif %}</td>
+			<td><b>{{ diligence.titre }} </b><br> {{ diligence.libelle|sanitize }}</td>
+			  <td>{{ diligence.ressource }}</td>
+			  <td>{{ diligence.debut|date('d-m-Y') if diligence.debut else '' }}</td>
+              <td>{{ diligence.delai|date('d-m-Y') if diligence.delai else '' }}</td>
+             <td>
+			{#	{% if diligence.etat and diligence.taux=="100" %}
+				<small class="badge badge-success"><i class="far fa-clock"></i> Raliser</small><br>
+				
+				 {% else %}
+				<small class="badge badge-danger"><i class="far fa-clock"></i> Non Réaliser</small>
+				  {% endif %}#}
+				  
+				  {% if diligence.etat %}
+				
+				<small class="badge badge-success"><b>Traiter</small> à <b>{{diligence.taux}}%</b>
+			 <div class="progress progress-sm">
+                              <div class="progress-bar bg-red" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{diligence.taux|number_format(0, '.', ',')}}%">
+                              </div>
+                          </div>
+	
+				
+				 {% else %}
+				<small class="badge badge-danger"><i class="far fa-clock"></i> Non raliser</small>
+				  {% endif %}
+				  
+				  
+				</td>
+			   <td>{{ diligence.observation|sanitize }}</td> 
+                
+               
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucune diligence</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+                    
+                  </div>
+				 
+                  <!-- /.tab-pane -->
+ <div class="tab-pane" id="mission">
+                    <!-- The timeline -->
+                    
+                      <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  
+				  
+                   <tr>
+                
+                 <th>N°</th>
+				    <th>Objet</th>
+					<th>Periode</th>
+                    <th>Structure</th>
+                    <th>Participant</th>
+					
+					<th>Fonction</th>
+                    <th>Destination</th>
+                    <th>Ordre</th>
+					<th>Rapport </th>
+                    <th>Actions</th>
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for mission in missions %}
+		   
+            
+			     <tr>
+			<td>{{ loop.index }}</td>
+             <td>{{ mission.objet }}</td>   
+              <td>du {{ mission.datedebut|date('Y-m-d') if mission.datedebut else '' }} au {{ mission.datefin|date('Y-m-d') if mission.datefin else '' }}</td>
+			   <td>{{ mission.destinataire.libelle }}</td>
+                <td>{{ mission.participant }}, Mle:{{ mission.matricule }}</td>
+				 <td>{{ mission.fonction }}</td>
+				<td>{{ mission.destination }}</td>
+                
+               
+               <td>
+				{% if mission.ordrem %}
+				
+				<a href="{{file_url('mission', mission.ordrem) }}" target="_blank"><small class="badge badge-success"> Signé</small>  <i class='fas fa-file-pdf' style='font-size:20px; color:#ffc107'></i></a>
+				{% else %}
+				<small class="badge badge-danger"> En cours de Signature</small>
+				{% endif %}
+				</td>
+                
+                <td>
+				{% if mission.rapportm %}
+				
+				<a href="{{file_url('mission', mission.rapportm) }}" target="_blank"> <i class='fas fa-file-pdf' style='font-size:20px; color:#ffc107'></i></a>
+				{% else %}
+				 Pas disponible
+				{% endif %}
+				</td>
+               
+				
+                <td>
+				{#<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-lg{{carrive.id}}">
+                 <i class="fas fa-folder"></i>
+                </button>
+				  <a class="btn btn-info btn-sm" href="{{ path('app_mission_edit', {'id': mission.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				#}
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_mission_show', {'id': mission.id}) }}"><i class="fas fa-eye"></i> </a>
+			  
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucune Mission</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+                    
+                  </div>
+                  
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </section>
+		  {% endif %}
+          <!-- right col -->
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    
+    {% endif %} 
+    <!-- /.content -->
+	{% if app.user.destinataire.profil == "courrier" %}
+	<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Les courriers départ non envoyés</h3>
+				<div class="float-right">
+				
+				   </div>
+              </div>
+			   
+			  
+              <!-- /.card-header -->
+              <div class="card-body">
+			 
+			  {% include 'layouts/includes/alert.html' %}
+			  
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                <th>Numéro</th>
+				 <th>Date</th>
+				<th>Objet</th>
+				<th>Signataire</th>
+				<th>Destinataire</th>
+                <th>Agent</th>
+                <th>Statut</th>
+                <!-- <th>Commentaire</th> -->
+                
+                  {#  <th>Actions</th>#}
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+           {% for csortir in csortirs%}
+            <tr>
+		    <td><span style=" font-size:18px; color:red">{{ csortir.numsortir }}</span></td>
+			<td>{{ csortir.datesortir|date('d-m-Y H:i') if csortir.datesortir else '' }}</td>
+			 
+			 <td>{{ csortir.objet }} <a href="{{file_url('courrier_sortis', csortir.courrier) }}" target="_blank" > <i class="fas fa-file-pdf" style=" font-size:24px"></i></a></td>
+             <td>{{ csortir.auteur.libelle }}</td>
+			  <td>{{ csortir.destinataire }}</td>
+			 <td>{{ csortir.agent }}</td>
+                <td>
+				{% if   csortir.decharge is not none%}
+				<a href="{{file_url('courrier_sortis', csortir.decharge) }}" target="_blank" ><small class="badge badge-success">
+				<i class="far fa-clock" style=" font-size:15px"></i> Transmis <i class="fas fa-file-pdf" style=" font-size:15px"></i></small><br>
+				
+				  </a>
+				
+				
+				 {% else %}
+				 <a href="{{ path('app_csortir_decharge', {'id': csortir.id}) }}" >
+				  <small class="badge badge-warning"><i class="far fa-clock"></i> Ajouter la dcharge <i class="fas fa-plus" style=" font-size:15px"></i></small>
+				  </a>
+				  {% endif %}
+				</td>
+               
+                
+                {#<td>
+				
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_csortir_show', {'id': csortir.id}) }}"><i class="fas fa-folder"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_csortir_edit', {'id': csortir.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				
+				
+			    <a class="btn btn-danger btn-sm" href="{{ path('app_cs_delete', {'id': csortir.id}) }}" data-method="post" data-confirm="Voulez-vous supprimer le courrier?"><i class="fas fa-trash"> </i></a>
+				
+
+	  
+				
+                   <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': carrive.id}) }}">edit</a>
+                </td>#}
+            </tr>
+			  
+        {% else %}
+            <tr>
+                <td colspan="10" align="center"><b>Touts les courriers enregistrés sont envoyés a leur destinataire</b></td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+   {% endif %}
+   {% if app.user.destinataire.profil == "accueil" %}
+   <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Audiences</h3>
+				<div class="float-right">
+				<a class="btn btn-outline-primary" href="{{ path('app_audience_new') }}" align="right" >Nouveau </a>
+				
+				   </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+			  <!-- Date range -->
+			  <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche de Audiences par date : </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation"  required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_diligence_index') }}" align="right" >Touts </a>
+				</form>
+				<br>
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                <th>#</th>
+				<th>Date heure</th>
+				<th>Nom et Prénoms</th>
+				{#<th>Service</th>#}
+				<th>Qualité</th>
+				<th>RDV</th>
+				 <th>Destinataire</th>
+				<th>Statut</th>
+                <!-- <th>Commentaire</th> -->
+                
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+            {% for audience in audiences  %}
+			
+            <tr>
+			<td>{{ loop.index }}</td>
+			<td>
+			
+			{{ audience.date|date('Y-m-d') if audience.date else '' }} pour {{ audience.heure|date('h:i') if audience.heure else '' }}
+			 
+			</td>
+			<td> {{ audience.nom}}</td>
+			 {#<td> {{ audience.service}}</td>#}
+			 <td>{{ audience.qualite }}</td>
+			 <td>{{ 'Oui' if audience.rdv else 'Non' }}</td>
+              <td>{{ audience.destinataire.libelle }}</td>
+              <td>
+			  {% if audience.statut %}
+               
+			  <small class="badge badge-success">
+			<i class="icon fas fa-check"></i> Accept!
+			  </small>
+			  {% else %}
+			   <small class="badge badge-danger">
+			<i class="icon fas fa-check"></i> Refuser!
+			  </small>
+			 {% endif %} 
+			  </td>
+			  
+                <td>
+				
+				
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_audience_show', {'id': audience.id}) }}"><i class="fas fa-eye"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_audience_edit', {'id': audience.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				
+				
+			    <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"> </i></a>
+				
+				
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucune audience n'est renseignée</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  
+	  </section>
+      {% endif %}
+  {% endblock %}

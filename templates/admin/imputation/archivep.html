@@ -78,7 +78,7 @@
 				  
            {% for imputation in imputations %}
             <tr>
-			<td>{{ nbr }}</td>
+			<td>{{ loop.index }}</td>
 			 <td>{{ imputation.courrier.objet }} <a href="{{file_url('courrier_arrives', imputation.courrier.courrier) }}" target="_blank" title="Copie du Courrier"><i class="fas fa-file-pdf" style=" font-size:20px; color:red"></i></a></td>
 			<td>{{ imputation.destinataire.libelle }}</td> 
              

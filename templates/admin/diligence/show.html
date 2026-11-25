@@ -1,0 +1,88 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}ECAB-MS{% endblock %}
+
+{% block body %}
+    
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Détail diligence</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ path('app_diligence_index') }}">Liste</a></li>
+              <li class="breadcrumb-item active">Diligence</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+   <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+         
+          <!-- /.col -->
+          <div class="col-md-10">
+            <div class="card card-primary card-outline">
+              <div class="card-header p-2" align="center" style="font-size:20px;">
+                <b><span >
+				{% if diligence.cr is none %}
+			Diligence du Cabinet
+			 {% else %}
+			Diligence du CR_DU_{{ diligence.cr.date|date('Y-m-d') if diligence.cr.date else '' }}
+			 {% endif %}
+				</span></b>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <ul class="list-group list-group-unbordered mb-3">
+				 
+                  <li class="list-group-item">
+                    <b>Le titre</b> <b><span class="float-right">{{ diligence.titre }}</span></b>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Sujet</b> <span class="float-right">{{ diligence.libelle|sanitize }}</span>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Ressource(s)</b> <span class="float-right">{{ diligence.ressource }}</span>
+                  </li>
+				  <li class="list-group-item">
+                    <b>Debut d'exécution</b> <span class="float-right">{{ diligence.debut|date('Y-m-d') if diligence.debut else '' }}</span>
+                  </li>
+				  <li class="list-group-item">
+                    <b>Fin d'exécution</b> <span class="float-right">{{ diligence.delai|date('Y-m-d') if diligence.delai else '' }} </span>
+                  </li>
+				  
+				   <li class="list-group-item">
+                    <b>Etat d'exécution</b> <span class="float-right">
+					
+					{% if diligence.etat %}
+				<small class="badge badge-success"><i class="far fa-clock"></i> Réaliser</small><br>
+				
+				 {% else %}
+				<small class="badge badge-danger"><i class="far fa-clock"></i> Non Réaliser</small>
+				  {% endif %} 
+				  </span>
+                  </li>
+				   <li class="list-group-item">
+                    <b>Observations</b> <span class="float-right">{{ diligence.observation|sanitize }}</span>
+                  </li>
+                </ul>
+
+                {#<a href="" class="btn btn-primary btn-block"><b>Mise à jour</b></a>#}
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+   
+{% endblock %}

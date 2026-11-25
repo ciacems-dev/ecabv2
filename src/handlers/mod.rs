@@ -1,4 +1,6 @@
 pub mod admin_home;
+pub mod audiences;
+pub mod cabinet;
 pub mod common;
 pub mod courrier_arrive;
 pub mod courrier_depart;

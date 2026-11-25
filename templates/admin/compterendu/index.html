@@ -1,0 +1,159 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion des Comptes Rendus{% endblock %}
+
+{% block body %}
+
+<style>
+.bouton{
+    padding: 0.25rem 0.5rem;
+    font-size: .70rem;
+    line-height: 0.7;
+    border-radius: 0.9rem;
+}
+</style>
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Les Comptes Rendus {{annee}}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Comptes Rendus </li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Comptes Rendus</h3>
+				<div class="float-right">
+				<a class="btn btn-outline-primary" href="{{ path('app_compterendu_new') }}" align="right" >Nouveau </a>
+				
+				   </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+			   {% include 'layouts/includes/alert.html' %}
+			   <!-- Date range -->
+			  <form class="form-inline" method="get">
+                <div class="col-sm-6 form-group" >
+                  <label>Recherche de diligences par date : </label>
+
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="far fa-calendar-alt"></i>
+                      </span>
+                    </div>
+                    <input type="text" name="dates" class="form-control float-right" id="reservation" value="" required> 
+					
+                  </div>
+                 
+                </div>
+				<button type="submit"class="btn btn-success"style="padding-left: 20px;margin-left: 20px;">Recherche</button> 
+				<a style="padding-left: 20px;margin-left: 20px;" class="btn btn-outline-primary" href="{{ path('app_compterendu_index') }}" align="right" >Touts </a>
+				</form> <br>
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                
+				<th>Date Heure</th>
+				<th>Objet</th>
+				<th>Présidence</th>
+				 <th>Rédacteur</th>
+				<th>Fichier</th>
+                <th>Statut</th>
+               
+                <th>Diligences</th>
+                
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for compterendu in compterendus  %}
+            <tr>
+			{#<td>{{ loop.index }}</td>#}
+			<td>{{ compterendu.date|date('Y-m-d') if compterendu.date else '' }} de {{ compterendu.debut|date('H:i') if compterendu.debut else '' }} à {{ compterendu.fin|date('H:i') if compterendu.fin else '' }}</td>
+			 <td>{{ compterendu.objet }}</td>
+			 <td>{{ compterendu.presidence }}</td>
+			  <td>{{ compterendu.redacteur }}</td>
+			<td>
+			{% if compterendu.cr %}
+			<a href="{{file_url('cr', compterendu.cr) }}" target="_blank" ><i class="fas fa-file-pdf" style=" font-size:24px"></i></a>
+
+			{% endif %}
+			</td>
+             <td> 
+			 {#{% if compterendu.listep %}
+			 <a href="{{file_url('cr', compterendu.listep) }}" target="_blank" >Liste présence</a>
+       {% endif %}#}
+        {% if compterendu.statut %}
+				<small class="badge badge-success"> Public</small>
+				 {% else %}
+				<small class="badge badge-danger"> Internet</small>
+				  {% endif %}
+        </td>
+			 
+             <td> <a class="btn btn-success bouton" href="{{ path('app_diligence_cr', {'id': compterendu.id}) }}"><i class="fas fa-plus"> </i></a>
+			  {% for diligence in compterendu.diligence %}
+			  
+			  {% else %}
+			  
+			   {% endfor %}
+			   
+			   {{ compterendu.diligence|length }}
+			 </td>
+                
+                <td>
+				
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_compterendu_show', {'id': compterendu.id}) }}"><i class="fas fa-eye"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_compterendu_edit', {'id': compterendu.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				
+				
+			   <a class="btn btn-danger btn-sm" href="{{ path('app_crdelete', {'id': compterendu.id}) }}" data-method="post" data-confirm="Voulez-vous supprimer ce compte rendu  ?"><i class="fas fa-trash"> </i></a>
+				
+				<a class="btn btn-default btn-sm" href="{{ path('app_crarchive', {'id': compterendu.id}) }}" data-method="post"><i class="fas fa-archive"></i> </a>
+				
+
+				
+                    {#<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': carrive.id}) }}">edit</a>#}
+                </td>
+            </tr>
+			  
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun Compte Rendu</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+    
+   
+   
+{% endblock %}

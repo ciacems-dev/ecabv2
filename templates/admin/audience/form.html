@@ -1,0 +1,39 @@
+{# Demande d'audience (AudienceType). #}
+{% extends 'admin/_form_page.html' %}
+{% block title %}Audience{% endblock %}
+{% block fil %}Audiences{% endblock %}
+{% block fields %}
+<div><label for="aud_destinataire" class="required">Destinataire</label>
+  <select id="aud_destinataire" name="destinataire" required class="form-control select2">
+    {% for d in destinataires %}<option value="{{ d.id }}" {% if d.id == v.destinataire %}selected{% endif %}>{{ d.libelle }}</option>{% endfor %}
+  </select></div>
+<div class="row">
+  <div class="col-md-6"><label for="aud_date" class="required">Date </label>
+    <input type="date" id="aud_date" name="date" required class="form-control" value="{{ v.date or '' }}"></div>
+  <div class="col-md-6"><label for="aud_heure">Heure </label>
+    <input type="time" id="aud_heure" name="heure" class="form-control" value="{{ v.heure or '' }}"></div>
+</div>
+<div class="row">
+  <div class="col-md-6"><label for="aud_nom">Nom</label>
+    <input type="text" id="aud_nom" name="nom" maxlength="255" class="form-control" value="{{ v.nom or '' }}"></div>
+  <div class="col-md-6"><label for="aud_telephone">Téléphone</label>
+    <input type="text" id="aud_telephone" name="telephone" maxlength="255" class="form-control" value="{{ v.telephone or '' }}"></div>
+</div>
+<div class="row">
+  <div class="col-md-6"><label for="aud_email">Email</label>
+    <input type="text" id="aud_email" name="email" maxlength="255" class="form-control" value="{{ v.email or '' }}"></div>
+  <div class="col-md-6"><label for="aud_service">Service</label>
+    <input type="text" id="aud_service" name="service" maxlength="255" class="form-control" value="{{ v.service or '' }}"></div>
+</div>
+<div class="row">
+  <div class="col-md-6"><label for="aud_qualite">Qualité</label>
+    <input type="text" id="aud_qualite" name="qualite" class="form-control" value="{{ v.qualite or '' }}"></div>
+  <div class="col-md-6"><label for="aud_rdv" class="required">Avez-vous un rendez vous?</label>
+    <select id="aud_rdv" name="rdv" class="form-control">
+      <option value="1" {% if v.rdv %}selected{% endif %}>OUI</option>
+      <option value="0" {% if not v.rdv %}selected{% endif %}>NON</option>
+    </select></div>
+</div>
+<div><label for="aud_objet">Objet de la visite</label>
+  <textarea id="aud_objet" name="objet" class="form-control" rows="3">{{ v.objet or '' }}</textarea></div>
+{% endblock %}

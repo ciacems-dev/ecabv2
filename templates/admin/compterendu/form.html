@@ -1,0 +1,41 @@
+{# Ajout / modification d'un compte rendu (CompterenduType). #}
+{% extends 'admin/_form_page.html' %}
+{% block title %}Compte rendu{% endblock %}
+{% block fil %}Comptes rendus{% endblock %}
+{% block fields %}
+<div class="row">
+  <div class="col-md-4"><label for="cr_date" class="required">Date du conseil</label>
+    <input type="date" id="cr_date" name="date" required class="form-control" value="{{ v.date or '' }}"></div>
+  <div class="col-md-4"><label for="cr_debut" class="required">Heure de debut </label>
+    <input type="time" id="cr_debut" name="debut" required class="form-control" value="{{ v.debut or '' }}"></div>
+  <div class="col-md-4"><label for="cr_fin" class="required">Heure de fin </label>
+    <input type="time" id="cr_fin" name="fin" required class="form-control" value="{{ v.fin or '' }}"></div>
+</div>
+<div><label for="cr_objet">Objet</label>
+  <textarea id="cr_objet" name="objet" class="form-control" rows="3">{{ v.objet or '' }}</textarea></div>
+<div class="row">
+  <div class="col-md-6"><label for="cr_lieu" class="required">Lieu</label>
+    <input type="text" id="cr_lieu" name="lieu" required maxlength="255" class="form-control" value="{{ v.lieu or '' }}"></div>
+  <div class="col-md-6"><label for="cr_presidence" class="required">Présidence</label>
+    <select id="cr_presidence" name="presidence" class="form-control">
+      {% for p in presidences %}<option value="{{ p }}" {% if p == v.presidence %}selected{% endif %}>{{ p }}</option>{% endfor %}
+    </select></div>
+</div>
+<div class="row">
+  <div class="col-md-6"><label for="cr_cr">Fiche de Rapport</label>
+    <input type="file" id="cr_cr" name="cr" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.jpg,.jpeg,.png">
+    {% if v.cr %}<small class="form-text text-muted">Fichier actuel : <a href="{{ file_url('cr', v.cr) }}" target="_blank">ouvrir</a>.</small>{% endif %}</div>
+  <div class="col-md-6"><label for="cr_listep">Liste de présence  </label>
+    <input type="file" id="cr_listep" name="listep" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.odt,.ods,.jpg,.jpeg,.png">
+    {% if v.listep %}<small class="form-text text-muted">Fichier actuel : <a href="{{ file_url('cr', v.listep) }}" target="_blank">ouvrir</a>.</small>{% endif %}</div>
+</div>
+<div class="row">
+  <div class="col-md-6"><label for="cr_redacteur" class="required">Rédacteur</label>
+    <input type="text" id="cr_redacteur" name="redacteur" required maxlength="255" class="form-control" value="{{ v.redacteur or '' }}"></div>
+  <div class="col-md-6"><label for="cr_statut" class="required">Statut</label>
+    <select id="cr_statut" name="statut" class="form-control">
+      <option value="1" {% if v.statut %}selected{% endif %}>Public</option>
+      <option value="0" {% if not v.statut %}selected{% endif %}>Privé</option>
+    </select></div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{# Rendez-vous (RendvousType). #}
+{% extends 'admin/_form_page.html' %}
+{% block title %}Rendez-vous{% endblock %}
+{% block fil %}Rendez-vous{% endblock %}
+{% block fields %}
+<div class="row">
+  <div class="col-md-6"><label for="rdv_date">Date debut</label>
+    <input type="date" id="rdv_date" name="date" class="form-control" value="{{ v.date or '' }}"></div>
+  <div class="col-md-6"><label for="rdv_datefin">Date fin</label>
+    <input type="date" id="rdv_datefin" name="datefin" class="form-control" value="{{ v.datefin or '' }}"></div>
+</div>
+<div class="row">
+  <div class="col-md-6"><label for="rdv_heured">Heure debut</label>
+    <input type="time" id="rdv_heured" name="heured" class="form-control" value="{{ v.heured or '' }}"></div>
+  <div class="col-md-6"><label for="rdv_heuref">Heure Fin</label>
+    <input type="time" id="rdv_heuref" name="heuref" class="form-control" value="{{ v.heuref or '' }}"></div>
+</div>
+<div><label for="rdv_lieu">Imputation budget</label>
+  <input type="text" id="rdv_lieu" name="lieu" maxlength="255" class="form-control" value="{{ v.lieu or '' }}"></div>
+<div><label for="rdv_message">Message</label>
+  <textarea id="rdv_message" name="message" class="form-control" rows="3">{{ v.message or '' }}</textarea></div>
+{% endblock %}
