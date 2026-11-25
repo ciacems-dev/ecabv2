@@ -184,7 +184,7 @@
             </a>
            
           </li>
-		  {% if app.user.destinataire.libelle!="Accueil" %}
+		  {% if app.user.destinataire.profil != "accueil" %}
 		  
 		   <li class="nav-item ">
             <a style="color:#fff" href="{{ path('app_destinataire_show', {'id': app.user.destinataire.id}) }}" class="nav-link {% if menu == '6' %}active{% endif %} " >
@@ -237,7 +237,7 @@
 			
           </li>
 		  {% endif %}
-		   {% if app.user.destinataire.libelle =="SERVICE COURRIER" or is_granted("ROLE_SUPER_ADMIN") %}
+		   {% if app.user.destinataire.profil == "courrier" or is_granted("ROLE_SUPER_ADMIN") %}
           <li class="nav-item">
             <a style="color:#fff" href="#" class="nav-link {% if menu == '3' %}active{% endif %}">
               <i class="nav-icon fas fa-server"></i>
@@ -247,7 +247,7 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              {% if app.user.destinataire.libelle =="DIRECTEUR DE CABINET"%}
+              {% if app.user.destinataire.profil == "dircab"%}
 			  
 			   <li class="nav-item">
                 <a href="{{path('app_carrive_dircab')}}" class="nav-link {% if menu == '3' and smenu == '1' %}active{% endif %}">
@@ -270,7 +270,7 @@
                 </a>
               </li>
 			
-			  {% if app.user.destinataire.libelle =="DIRECTEUR DE CABINET" or app.user.destinataire.libelle =="SERVICE COURRIER" or is_granted("ROLE_SUPER_ADMIN")%}
+			  {% if app.user.destinataire.profil == "dircab" or app.user.destinataire.profil == "courrier" or is_granted("ROLE_SUPER_ADMIN")%}
 			  <li class="nav-item">
                 <a href="{{path('app_imputation_index')}}" class="nav-link {% if menu == '3' and smenu == '3' %}active{% endif %}">
                   <i class="far fa-circle nav-icon"></i>
@@ -291,7 +291,7 @@
             </ul>
           </li>
 		  {% endif %}
-		  {% if app.user.destinataire.libelle =="CHARGE D'ETUDES" or is_granted("ROLE_SUPER_ADMIN") %}
+		  {% if app.user.destinataire.profil == "etudes" or is_granted("ROLE_SUPER_ADMIN") %}
           <li class="nav-item">
             <a style="color:#fff" href="#" class="nav-link {% if menu == '4' %}active{% endif %}">
               <i class="nav-icon fas fa-tree"></i>
@@ -341,7 +341,7 @@
           </li>
 		   {% endif %}
            
-            {% if app.user.destinataire.libelle =="SERVICE COURRIER" or is_granted("ROLE_SUPER_ADMIN") %}
+            {% if app.user.destinataire.profil == "courrier" or is_granted("ROLE_SUPER_ADMIN") %}
                 <li class="nav-item">
                 
             <a style="color:#fff" href="#" class="nav-link {% if menu == '6' %}active{% endif %}">
@@ -352,7 +352,7 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-               {% if app.user.destinataire.libelle =="SERVICE COURRIER" or is_granted("ROLE_SUPER_ADMIN") %}
+               {% if app.user.destinataire.profil == "courrier" or is_granted("ROLE_SUPER_ADMIN") %}
               <li class="nav-item">
                 <a href="{{path('app_carrive_archive')}}" class="nav-link {% if menu == '6' and smenu == '1' %}active{% endif %}">
                   <i class="far fa-circle nav-icon"></i>
@@ -362,7 +362,7 @@
 			  
 			    {% endif %}
                 
-                {% if app.user.destinataire.libelle =="DIRECTEUR DE CABINET" %}
+                {% if app.user.destinataire.profil == "dircab" %}
 			  <li class="nav-item">
                 <a href="{{path('app_imputation_archive')}}" class="nav-link {% if menu == '6' and smenu == '2' %}active{% endif %}">
                   <i class="far fa-circle nav-icon"></i>
@@ -375,7 +375,7 @@
           </li>
             {% endif %}
              {#
-             {% if app.user.destinataire.libelle !="SERVICE COURRIER" or app.user.destinataire.libelle !="DIRECTEUR DE CABINET" %}
+             {% if app.user.destinataire.profil != "courrier" or app.user.destinataire.profil != "dircab" %}
              <li class="nav-item">
            
             <a style="color:#fff" href="#" class="nav-link {% if menu == '7' %}active{% endif %}">
@@ -395,7 +395,7 @@
              
              
 		   <li class="nav-item">
-            {% if app.user.destinataire.libelle =="SERVICE COURRIER" or is_granted("ROLE_SUPER_ADMIN") %}
+            {% if app.user.destinataire.profil == "courrier" or is_granted("ROLE_SUPER_ADMIN") %}
             <a style="color:#fff" href="#" class="nav-link {% if menu == '7' %}active{% endif %}">
               <i class="nav-icon fas fa-archive"></i>
               <p>
@@ -405,9 +405,9 @@
             </a>
              {% endif %}
             <ul class="nav nav-treeview">
-               {% if app.user.destinataire.libelle =="SERVICE COURRIER" or is_granted("ROLE_SUPER_ADMIN") %}
+               {% if app.user.destinataire.profil == "courrier" or is_granted("ROLE_SUPER_ADMIN") %}
               
-              {% if app.user.destinataire.libelle =="DIRECTEUR DE CABINET"%}
+              {% if app.user.destinataire.profil == "dircab"%}
 			  
 			   <li class="nav-item">
                 <a href="{{path('app_carrivearchive')}}" class="nav-link {% if menu == '7' and smenu == '1' %}active{% endif %}">
@@ -432,7 +432,7 @@
               </li>
 			    {% endif %}
 				
-			  {% if app.user.destinataire.libelle =="DIRECTEUR DE CABINET" or app.user.destinataire.libelle =="SERVICE COURRIER" %}
+			  {% if app.user.destinataire.profil == "dircab" or app.user.destinataire.profil == "courrier" %}
 			  <li class="nav-item">
                 <a href="{{path('app_archive')}}" class="nav-link {% if menu == '7' and smenu == '3' %}active{% endif %}">
                   <i class="far fa-circle nav-icon"></i>
@@ -448,7 +448,7 @@
               </li>
 			 {% endif %}
               
-			  {% if app.user.destinataire.libelle =="CHARGE D'ETUDES" or is_granted("ROLE_SUPER_ADMIN") %}
+			  {% if app.user.destinataire.profil == "etudes" or is_granted("ROLE_SUPER_ADMIN") %}
 			   <li class="nav-item">
                 <a href="{{path('app_compterendu_archive')}}" class="nav-link {% if menu == '7' and smenu == '4' %}active{% endif %}">
                   <i class="far fa-circle nav-icon"></i>

@@ -1,0 +1,40 @@
+{# Mise en page commune des formulaires simples (en-tête, carte, erreurs, jeton CSRF). #}
+{% extends 'layouts/admin.html' %}
+{% block body %}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6"><h1>{{ titre }}</h1></div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">{% block fil %}{% endblock %}</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8 offset-2">
+        <div class="card card-default">
+          <div class="card-body">
+            {% if errors %}
+            <div class="alert alert-danger"><ul class="mb-0">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+            {% endif %}
+            {% block avant %}{% endblock %}
+            <form method="post" enctype="multipart/form-data">
+              <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+              <div class="form-group">
+                {% block fields %}{% endblock %}
+              </div>
+              <button class="btn btn-primary">Enregistrer</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

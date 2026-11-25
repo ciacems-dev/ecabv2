@@ -6,13 +6,14 @@ reproduites dans la version Rust. Les écarts volontaires sont listés à la fin
 ## Profils
 
 Un utilisateur a un **rôle** (`ROLE_SUPER_ADMIN`, `ROLE_ADMIN`, `ROLE_USER`) et un **service**
-(`destinataire`). Les droits fins dépendent du libellé du service, comme dans l'original.
+(`destinataire`). Les droits fins dépendent du **profil** du service (dans l'original : de son
+libellé exact ; voir docs/regles-comptes-referentiels.md, « Profil des services »).
 
 | Profil | Définition | Comptes actifs (nov. 2026) |
 |---|---|---|
 | Super admin | `ROLE_SUPER_ADMIN` | directeur de cabinet (3), chef de cabinet, DSI |
-| Directeur de cabinet | service « DIRECTEUR DE CABINET » | tous super admin |
-| Service courrier | service « SERVICE COURRIER » | 2 (ROLE_ADMIN) |
+| Directeur de cabinet | service de profil `dircab` (« DIRECTEUR DE CABINET ») | tous super admin |
+| Service courrier | service de profil `courrier` (« SERVICE COURRIER ») | 2 (ROLE_ADMIN) |
 | Service | tout autre service, `ROLE_ADMIN` | ~15 |
 | `ROLE_USER` | aucun accès à `/admin` (règle d'origine) | 2 |
 

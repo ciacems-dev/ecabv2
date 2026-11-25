@@ -58,8 +58,31 @@ pub fn pattern(name: &str) -> Option<&'static str> {
         "app_csarchive" => "/admin/courriers/departs/{id}/archiver",
         "app_nonapp_csarchive" => "/admin/courriers/departs/{id}/desarchiver",
 
-        // Espace service
+        // Espace service et services
         "app_destinataire_show" => "/admin/services/{id}",
+        "app_destinataire" => "/admin/services",
+        "app_destinataire_index" => "/admin/services/suivi",
+        "app_destinataire_new" => "/admin/services/nouveau",
+        "app_destinataire_edit" => "/admin/services/{id}/modifier",
+        "app_active" => "/admin/services/{id}/activer",
+        "app_desactive" => "/admin/services/{id}/desactiver",
+
+        // Types de départ
+        "app_typedepart_index" => "/admin/types-depart",
+        "app_typedepart_new" => "/admin/types-depart/nouveau",
+        "app_typedepart_edit" => "/admin/types-depart/{id}/modifier",
+        "app_type_delete" => "/admin/types-depart/{id}/supprimer",
+
+        // Comptes
+        "app_user_admin" => "/admin/utilisateurs",
+        "app_user_membre" => "/admin/utilisateurs/membres",
+        "app_user_new" => "/admin/utilisateurs/nouveau",
+        "app_user_show" => "/admin/utilisateurs/{id}",
+        "app_user_edit" => "/admin/utilisateurs/{id}/modifier",
+        "app_password_edit" => "/admin/utilisateurs/{id}/mot-de-passe",
+        "app_active_user" => "/admin/utilisateurs/{id}/activer",
+        "app_desactive_user" => "/admin/utilisateurs/{id}/desactiver",
+        "app_connexion_histo" => "/admin/utilisateurs/historique",
         _ => return None,
     })
 }

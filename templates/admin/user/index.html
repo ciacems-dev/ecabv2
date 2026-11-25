@@ -1,0 +1,133 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion des Utilisateur{% endblock %}
+
+{% block body %}
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Utilisateurs</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	
+	<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h2 class="card-title">{{ titre_liste }}</h2>
+				<div class="float-right">
+				<a class="btn btn-outline-primary" href="{{ path('app_user_new') }}" align="right" >Nouveau </a>
+				 </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+				{% include 'layouts/includes/alert.html' %}
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>Nom et Prénoms</th>
+					<th>Pays</th>
+                    <th>Email)</th>
+                    <th>Téléphone</th>
+					<th>Service</th>
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  {% for user in users %}
+            <tr>
+               <td> {{ user.civilite }} {{ user.nom }} {{ user.prenom }}</td>
+              
+			   <td><i class="flag-icon flag-icon-{{ user.pays.isocode2|lower }}"></i>  {{ user.pays.nompays }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.telephone }}</td>
+                <td>{{ user.destinataire.libelle }}</td>
+                
+                <td>
+                    <a class="btn btn-primary btn-sm" href="{{ path('app_user_show', {'id': user.id}) }}"><i class="fas fa-eye"></i> </a>
+			    <a class="btn btn-info btn-sm" href="{{ path('app_user_edit', {'id': user.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+			    <a class="btn btn-danger btn-sm" href="#"><i class="fas fa-trash"> </i></a>
+				
+				 {% if user.active %}
+                                                <a href="{{ path('app_desactive_user', {'id': user.id}) }}" data-method="post" title="Désactiver"><i class="fa fa-user-minus text-success"></i> </a>
+                                            
+											{% else %}
+                                                <a href="{{ path('app_active_user', {'id': user.id}) }}" data-method="post" title="Activer ggggg"><i class="fa fa-user-check text-warning"></i> </a>
+                                            {% endif %}
+                    {#<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>#}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tfoot>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  </section>
+    {#<table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Password</th>
+                <th>IsVerified</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Civilite</th>
+                <th>Telephone</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles|json_encode if user.roles else '' }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ 'Yes' if user.isVerified else 'No' }}</td>
+                <td>{{ user.nom }}</td>
+                <td>{{ user.prenom }}</td>
+                <td>{{ user.civilite }}</td>
+                <td>{{ user.telephone }}</td>
+                <td>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>#}
+
+   
+{% endblock %}

@@ -1,0 +1,266 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Profil Compte{% endblock %}
+
+{% block body %}
+    
+<section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Profil :{{user.destinataire.libelle}}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Profil</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+	<!-- Main content -->
+	
+	
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+               <div class="col-md-3">
+
+            <!-- Profile Image -->
+            <div class="card card-primary card-outline">
+              <div class="card-body box-profile">
+                {#<div class="text-center">
+                  <img class="profile-user-img img-fluid img-circle"
+                       src="../../dist/img/user4-128x128.jpg"
+                       alt="User profile picture">
+                </div>#}
+
+                <h3 class="profile-username text-center">{{ user.civilite }} {{user.nom}} {{user.prenom}}</h3>
+
+                <p class="text-muted text-center">{{user.destinataire.libelle}}</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                  <li class="list-group-item">
+                    <b>Email</b> <a class="float-right">{{user.email}}</a>
+                  </li>
+                  <li class="list-group-item">
+                    <b>Télephone</b> <a class="float-right">{{user.telephone}}</a>
+                  </li>
+                  
+                </ul>
+
+                <a href="#" class="btn btn-primary btn-block"><b>Modifier</b></a>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+          <div class="col-md-9">
+			 <div class="card">
+              <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                  <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Dossiers imputés</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Les Comptes Rendus</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#diligence" data-toggle="tab">Les Diligences</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <div class="active tab-pane" id="activity">
+                    <!-- Post -->
+                     <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                <th>#</th>
+				<th>Courrier</th>
+				<th>Expeditaire</th>
+                <th>Date</th>
+                <th>Instructions</th>
+				<th>Etat</th>
+				<th>Courrier</th>
+				<th>Note</th>
+                <!-- <th>Commentaire</th> -->
+                
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for imputation in imputations %}
+            <tr>
+			<td>{{ loop.index }}</td>
+			 <td>{{ imputation.courrier.objet }}</td>
+			<td>{{ imputation.courrier.expeditaire }}</td> 
+             
+             <td>{{ imputation.date|date('Y-m-d') if imputation.date else '' }}</td>
+                <td>{{ imputation.reponse|sanitize }}</td>
+                <td>
+				{% if imputation.statut %}
+				<small class="badge badge-success"><i class="far fa-clock"></i> Traité</small>
+				 {% else %}
+				<small class="badge badge-warning"><i class="far fa-clock"></i> Non traité</small>
+				  {% endif %}
+				</td>
+                <td><a href="{{file_url('courrier_arrives', imputation.courrier.courrier) }}" target="_blank" title="Copie Courrier"><i class="fas fa-download" style=" font-size:24px"></i></a> </td>
+                <td>{{ imputation.commentaire|sanitize }}</td>
+               
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun dossier imputé</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+
+               
+
+                    <!-- /.post -->
+                  </div>
+                  <!-- /.tab-pane -->
+                  <div class="tab-pane" id="timeline">
+                    <!-- The timeline -->
+                    
+                      <table id="example3" class="table table-bordered table-striped">
+                  <thead>
+                  
+				  
+                   <tr>
+                <th>#</th>
+				<th>Date Heure</th>
+				<th>Lieu</th>
+				<th>Présidence</th>
+				 <th>Rédacteur</th>
+				<th>CR</th>
+                <th>Liste de présence</th>
+               
+                <th>Diligences</th>
+                
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for compterendu in compterendus %}
+            <tr>
+			<td>{{ loop.index }}</td>
+			<td>{{ compterendu.date|date('Y-m-d') if compterendu.date else '' }} de {{ compterendu.debut|date('H:i') if compterendu.debut else '' }} à {{ compterendu.fin|date('H:i') if compterendu.fin else '' }}</td>
+			 <td>{{ compterendu.lieu }}</td>
+			 <td>{{ compterendu.presidence }}</td>
+			  <td>{{ compterendu.redacteur }}</td>
+			<td><a href="{{file_url('cr', compterendu.cr) }}" target="_blank" >CR</a></td>
+             <td> <a href="{{file_url('cr', compterendu.listep) }}" target="_blank" >Liste présence</a> </td>
+			 
+             <td> 
+			  {% for diligence in compterendu.diligence %}
+			  
+			  {% else %}
+			  
+			   {% endfor %}
+			   
+			   {{ loop.index }}
+			 </td>
+                
+               
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucun Compte Rendu</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+                    
+                  </div>
+				  
+				   <div class="tab-pane" id="diligence">
+                    <!-- The timeline -->
+                    
+                      <table id="example4" class="table table-bordered table-striped">
+                   <thead>
+                  <tr>
+				  
+                   <tr>
+                <th>#</th>
+				<th>CR</th>
+				<th>Libelle</th>
+				<th>Réssource</th>
+				<th>Début d'execution</th>
+				<th>Fin d'execution</th>
+				 <th>Etat</th>
+				<th>Observation</th>
+                <!-- <th>Commentaire</th> -->
+                
+                  
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+            {% for diligence in diligences %}
+            <tr>
+			<td>{{ loop.index }}</td>
+			<td>{{ diligence.cr.date|date('Y-m-d') if diligence.cr.date else '' }}</td>
+			<td><b>{{ diligence.titre }} </b><br> {{ diligence.libelle|sanitize }}</td>
+			  <td>{{ diligence.ressource }}</td>
+			  <td>{{ diligence.debut|date('Y-m-d') if diligence.debut else '' }}</td>
+              <td>{{ diligence.delai|date('Y-m-d') if diligence.delai else '' }}</td>
+               <td>
+				{% if diligence.etat %}
+				<small class="badge badge-success"><i class="far fa-clock"></i> Réaliser</small><br>
+				
+				 {% else %}
+				<small class="badge badge-danger"><i class="far fa-clock"></i> Non Réaliser</small>
+				  {% endif %}
+				</td>
+			   <td>{{ diligence.observation|sanitize }}</td> 
+               
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucune Diligence n'est renseignée</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+                    
+                  </div>
+                  <!-- /.tab-pane -->
+
+                  
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    
+
+
+{% endblock %}

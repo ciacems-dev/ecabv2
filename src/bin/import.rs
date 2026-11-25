@@ -289,6 +289,21 @@ async fn main() -> Result<()> {
     if !errors.is_empty() {
         bail!("Écarts de comptage sur : {}", errors.join(", "));
     }
+
+    // Profil des services (absent de l'ancienne base) : déduit des libellés, comme la migration
+    // 20261126000001_profil_service.sql.
+    let profils = sqlx::query(
+        "UPDATE destinataire SET profil = CASE libelle
+            WHEN 'SERVICE COURRIER' THEN 'courrier'
+            WHEN 'DIRECTEUR DE CABINET' THEN 'dircab'
+            WHEN 'CHARGE D''ETUDES' THEN 'etudes'
+            WHEN 'Accueil' THEN 'accueil'
+         END",
+    )
+    .execute(&dst)
+    .await?;
+    let avec_profil: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM destinataire WHERE profil IS NOT NULL").fetch_one(&dst).await?;
+    println!("Profils des services : {avec_profil} service(s) à profil sur {}.", profils.rows_affected());
     println!("Import terminé, tous les comptages concordent.");
     Ok(())
 }

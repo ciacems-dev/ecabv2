@@ -78,7 +78,7 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         login_limiter: Arc::new(LoginLimiter::new(5, Duration::from_secs(15 * 60))),
     };
 
-    use handlers::{courrier_arrive as ca, courrier_depart as cd, destinataire, imputation as imp};
+    use handlers::{courrier_arrive as ca, courrier_depart as cd, destinataire, imputation as imp, referentiels as rf, utilisateurs as us};
     use axum::routing::post;
 
     // Actions simples (supprimer, archiver, traité…) : POST + jeton CSRF vérifié par middleware.
@@ -90,6 +90,11 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         .route("/admin/courriers/departs/{id}/supprimer", post(cd::delete))
         .route("/admin/courriers/departs/{id}/archiver", post(cd::archive))
         .route("/admin/courriers/departs/{id}/desarchiver", post(cd::unarchive))
+        .route("/admin/types-depart/{id}/supprimer", post(rf::type_delete))
+        .route("/admin/services/{id}/activer", post(rf::service_activer))
+        .route("/admin/services/{id}/desactiver", post(rf::service_desactiver))
+        .route("/admin/utilisateurs/{id}/activer", post(us::activer))
+        .route("/admin/utilisateurs/{id}/desactiver", post(us::desactiver))
         .route("/admin/imputations/{id}/supprimer", post(imp::delete))
         .route("/admin/imputations/{id}/traite", post(imp::traite))
         .route("/admin/imputations/{id}/non-traite", post(imp::non_traite))
@@ -130,8 +135,23 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
         .route("/admin/imputations/{id}/retour", get(imp::retour).post(imp::retour_submit))
         .route("/admin/imputations/{id}/observation", get(imp::observation).post(imp::observation_submit))
         .route("/admin/imputations/{id}/document-final", get(imp::document_final).post(imp::document_final_submit))
-        // Espace service
+        // Espace service, services, types de départ
         .route("/admin/services/{id}", get(destinataire::show))
+        .route("/admin/services", get(rf::services_index))
+        .route("/admin/services/suivi", get(rf::suivi_imputations))
+        .route("/admin/services/nouveau", get(rf::service_new).post(rf::service_create))
+        .route("/admin/services/{id}/modifier", get(rf::service_edit).post(rf::service_update))
+        .route("/admin/types-depart", get(rf::types_index))
+        .route("/admin/types-depart/nouveau", get(rf::type_new).post(rf::type_create))
+        .route("/admin/types-depart/{id}/modifier", get(rf::type_edit).post(rf::type_update))
+        // Comptes
+        .route("/admin/utilisateurs", get(us::admins))
+        .route("/admin/utilisateurs/membres", get(us::membres))
+        .route("/admin/utilisateurs/historique", get(us::historique))
+        .route("/admin/utilisateurs/nouveau", get(us::new).post(us::create))
+        .route("/admin/utilisateurs/{id}", get(us::show))
+        .route("/admin/utilisateurs/{id}/modifier", get(us::edit).post(us::update))
+        .route("/admin/utilisateurs/{id}/mot-de-passe", get(us::password_form).post(us::password_submit))
         // Fichiers joints (téléchargement contrôlé)
         .route("/fichiers/{dir}/{name}", get(files::download))
         .merge(actions)

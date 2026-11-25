@@ -1,0 +1,18 @@
+{% extends 'admin/_form_page.html' %}
+{% block title %}Types départs{% endblock %}
+{% block fil %}Types départs{% endblock %}
+{% block fields %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="form-group"><label for="typedepart_libelle" class="required">Libellé</label>
+      <input type="text" id="typedepart_libelle" name="libelle" required maxlength="255" class="form-control" value="{{ libelle or '' }}"></div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group"><label for="typedepart_statut" class="required">Statut</label>
+      <select id="typedepart_statut" name="statut" class="form-control">
+        <option value="1" {% if statut %}selected{% endif %}>Activé</option>
+        <option value="0" {% if not statut %}selected{% endif %}>Désactivé</option>
+      </select></div>
+  </div>
+</div>
+{% endblock %}

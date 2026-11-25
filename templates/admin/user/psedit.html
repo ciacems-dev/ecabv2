@@ -1,0 +1,18 @@
+{# Changement de mot de passe (UserpsType). #}
+{% extends 'admin/_form_page.html' %}
+{% block title %}Mot de passe{% endblock %}
+{% block fil %}Mot de passe{% endblock %}
+{% block avant %}
+{% if not soi %}<p>Compte : <b>{{ cible.civilite }} {{ cible.nom }} {{ cible.prenom }}</b> ({{ cible.email }})</p>{% endif %}
+{% endblock %}
+{% block fields %}
+{% if soi %}
+<div><label for="user_current_password" class="required">Mot de passe actuel</label>
+  <input type="password" id="user_current_password" name="current_password" required autocomplete="current-password" class="form-control"></div>
+{% endif %}
+<div><label for="user_password" class="required">Mot de passe</label>
+  <input type="password" id="user_password" name="password" required minlength="{{ min_password }}" autocomplete="new-password" class="form-control"></div>
+<div><label for="user_password_confirm" class="required">Confirmer le mot de passe</label>
+  <input type="password" id="user_password_confirm" name="password_confirm" required minlength="{{ min_password }}" autocomplete="new-password" class="form-control"></div>
+<small class="form-text text-muted">{{ min_password }} caractères minimum.</small>
+{% endblock %}

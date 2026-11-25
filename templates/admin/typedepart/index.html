@@ -1,0 +1,97 @@
+
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Gestion des diligences{% endblock %}
+
+{% block body %}
+   <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Les Types départs</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active">Départs</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+		  
+		   <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Départs</h3>
+				<div class="float-right">
+				<a class="btn btn-outline-primary" href="{{ path('app_typedepart_new') }}" align="right" >Nouveau </a>
+				<a class="btn btn-info" href="{{ path('app_csortir_index') }}" align="right" >Courriers Départs </a>
+				   </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+				{% include 'layouts/includes/alert.html' %}
+			  <!-- Date range -->
+			 
+				<br>
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+				  
+                   <tr>
+                <th>#</th>
+				<th>Libelle</th>
+                <th>Statut</th>
+                <th>actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+				  
+				  
+           {% for typedepart in typedeparts %}
+            <tr>
+			<td>{{ loop.index }}</td>
+			
+                <td>{{ typedepart.libelle }}</td>
+                <td>{{ 'OUI' if typedepart.statut else 'NON' }}</td>
+                <td>
+				
+                   
+			    <a class="btn btn-info btn-sm" href="{{ path('app_typedepart_edit', {'id': typedepart.id}) }}"><i class="fas fa-pencil-alt"></i></a>
+				
+			
+			    <a class="btn btn-danger btn-sm" href="{{ path('app_type_delete', {'id': typedepart.id}) }}" data-method="post" data-confirm="Voulez-vous supprimer ce type de départ ?"><i class="fas fa-trash"> </i></a>
+				
+				
+				
+                    {#<a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'id': carrive.id}) }}">edit</a>#}
+                </td>
+            </tr>
+			 
+        {% else %}
+            <tr>
+                <td colspan="10">Aucune type n'est renseignée</td>
+            </tr>
+        {% endfor %}
+                  
+                  
+                  
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+		  </div>
+        </div> 
+	  </div> 
+	  
+	  </section>
+   
+{% endblock %}

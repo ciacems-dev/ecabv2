@@ -26,6 +26,8 @@ pub enum Categorie {
     CourrierArrive,
     CourrierSorti,
     Imputation,
+    /// Comptes rendus de réunion et listes de présence.
+    CompteRendu,
 }
 
 impl Categorie {
@@ -34,6 +36,7 @@ impl Categorie {
             Categorie::CourrierArrive => "courrier_arrives",
             Categorie::CourrierSorti => "courrier_sortis",
             Categorie::Imputation => "imputations",
+            Categorie::CompteRendu => "cr",
         }
     }
 
@@ -42,6 +45,7 @@ impl Categorie {
             "courrier_arrives" => Categorie::CourrierArrive,
             "courrier_sortis" => Categorie::CourrierSorti,
             "imputations" => Categorie::Imputation,
+            "cr" => Categorie::CompteRendu,
             _ => return None,
         })
     }
@@ -145,6 +149,19 @@ async fn authorize(state: &AppState, user: &CurrentUser, cat: Categorie, name: &
             .await?;
             let Some((dest,)) = row else { return Err(AppError::NotFound) };
             crate::auth::ensure(user.can_manage_imputations() || user.owns(dest))?;
+            Ok(None)
+        }
+        Categorie::CompteRendu => {
+            // Menu « Cabinet du Ministre » : chargé d'études ou super admin.
+            let exists: bool =
+                sqlx::query_scalar("SELECT EXISTS (SELECT 1 FROM compterendu WHERE cr = $1 OR listep = $1)")
+                    .bind(name)
+                    .fetch_one(&state.db)
+                    .await?;
+            if !exists {
+                return Err(AppError::NotFound);
+            }
+            crate::auth::ensure(user.is_super_admin() || user.is_charge_etudes())?;
             Ok(None)
         }
         Categorie::CourrierSorti => {

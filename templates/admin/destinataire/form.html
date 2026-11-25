@@ -1,0 +1,17 @@
+{% extends 'admin/_form_page.html' %}
+{% block title %}Destinataire{% endblock %}
+{% block fil %}Destinataires{% endblock %}
+{% block fields %}
+<div><label for="destinataire_libelle" class="required">Libelle</label>
+  <input type="text" id="destinataire_libelle" name="libelle" required maxlength="255" class="form-control" value="{{ libelle or '' }}"></div>
+<div class="mt-2"><label for="destinataire_profil">Profil</label>
+  <select id="destinataire_profil" name="profil" class="form-control">
+    <option value="" {% if not profil %}selected{% endif %}>Service ordinaire</option>
+    {% for p in profils %}<option value="{{ p.code }}" {% if p.code == profil %}selected{% endif %}>{{ p.libelle }}</option>{% endfor %}
+  </select>
+  <small class="form-text text-muted">
+    Le profil donne les droits du service (service courrier : saisie du courrier ; directeur de cabinet :
+    imputations ; chargé d'études : comptes rendus et diligences ; accueil : menu réduit).
+    Le libellé peut être modifié librement, il n'a aucun effet sur les droits.
+  </small></div>
+{% endblock %}

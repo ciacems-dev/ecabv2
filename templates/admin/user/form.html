@@ -1,0 +1,44 @@
+{# Création (UserType) et modification (UserEditType) d'un compte. #}
+{% extends 'admin/_form_page.html' %}
+{% block title %}Utilisateur{% endblock %}
+{% block fil %}Utilisateurs{% endblock %}
+{% block fields %}
+<div><label for="user_destinataire" class="required">Unité Administrative</label>
+  <select id="user_destinataire" name="destinataire" required class="form-control select2">
+    {% for d in destinataires %}<option value="{{ d.id }}" {% if d.id == v.destinataire %}selected{% endif %}>{{ d.libelle }}</option>{% endfor %}
+  </select></div>
+<div><label for="user_nom" class="required">Nom</label>
+  <input type="text" id="user_nom" name="nom" required maxlength="50" class="form-control" value="{{ v.nom or '' }}"></div>
+<div><label for="user_prenom" class="required">Prénoms</label>
+  <input type="text" id="user_prenom" name="prenom" required maxlength="255" class="form-control" value="{{ v.prenom or '' }}"></div>
+<div><label for="user_civilite" class="required">Civilite</label>
+  <select id="user_civilite" name="civilite" class="form-control select2">
+    {% for c in civilites %}<option value="{{ c.value }}" {% if c.value == v.civilite %}selected{% endif %}>{{ c.label }}</option>{% endfor %}
+  </select></div>
+<div class="form-group">
+  <div><label for="user_pays" class="required">Pays</label>
+    <select id="user_pays" name="pays" required class="form-control select2">
+      {% for p in pays %}<option value="{{ p.id }}" {% if p.id == v.pays %}selected{% endif %}>{{ p.libelle }}</option>{% endfor %}
+    </select></div>
+</div>
+<div><label for="user_telephone" class="required">Téléphone</label>
+  <input type="text" id="user_telephone" name="telephone" required maxlength="255" class="form-control" value="{{ v.telephone or '' }}"></div>
+<div><label for="user_email" class="required">Email</label>
+  <input type="email" id="user_email" name="email" required maxlength="180" class="form-control" value="{{ v.email or '' }}"></div>
+{% if edition %}
+<fieldset class="mt-2"><legend class="col-form-label required">Rôles</legend>
+  <div class="form-check"><input type="checkbox" id="user_roles_0" name="role_user" value="1" class="form-check-input" {% if v.role_user %}checked{% endif %}>
+    <label class="form-check-label" for="user_roles_0">Editeur</label></div>
+  <div class="form-check"><input type="checkbox" id="user_roles_1" name="role_admin" value="1" class="form-check-input" {% if v.role_admin %}checked{% endif %}>
+    <label class="form-check-label" for="user_roles_1">Administrateur</label></div>
+</fieldset>
+{% else %}
+<div class="form-group mt-2">
+  <div><label for="user_password" class="required">Mot de passe</label>
+    <input type="password" id="user_password" name="password" required minlength="{{ min_password }}" autocomplete="new-password" class="form-control"></div>
+  <div><label for="user_password_confirm" class="required">Confirmer le mot de passe</label>
+    <input type="password" id="user_password_confirm" name="password_confirm" required minlength="{{ min_password }}" autocomplete="new-password" class="form-control"></div>
+  <small class="form-text text-muted">{{ min_password }} caractères minimum.</small>
+</div>
+{% endif %}
+{% endblock %}

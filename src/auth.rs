@@ -34,6 +34,48 @@ static DUMMY_HASH: std::sync::LazyLock<String> = std::sync::LazyLock::new(|| {
 pub struct Destinataire {
     pub id: i32,
     pub libelle: String,
+    /// Profil du service (`courrier`, `dircab`, `etudes`, `accueil`), exposé aux templates
+    /// sous `app.user.destinataire.profil`. Le libellé n'intervient jamais dans les droits.
+    pub profil: Option<String>,
+}
+
+/// Profil d'un service : porte les droits qui dépendaient, dans l'original, du libellé exact.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Profil {
+    /// Service courrier (« SERVICE COURRIER » dans l'original).
+    Courrier,
+    /// Directeur de cabinet.
+    Dircab,
+    /// Chargé d'études.
+    Etudes,
+    /// Accueil.
+    Accueil,
+}
+
+impl Profil {
+    pub const TOUS: [Profil; 4] = [Profil::Courrier, Profil::Dircab, Profil::Etudes, Profil::Accueil];
+
+    pub fn code(self) -> &'static str {
+        match self {
+            Profil::Courrier => "courrier",
+            Profil::Dircab => "dircab",
+            Profil::Etudes => "etudes",
+            Profil::Accueil => "accueil",
+        }
+    }
+
+    pub fn libelle(self) -> &'static str {
+        match self {
+            Profil::Courrier => "Service courrier",
+            Profil::Dircab => "Directeur de cabinet",
+            Profil::Etudes => "Chargé d'études",
+            Profil::Accueil => "Accueil",
+        }
+    }
+
+    pub fn from_code(code: &str) -> Option<Self> {
+        Profil::TOUS.into_iter().find(|p| p.code() == code)
+    }
 }
 
 /// Utilisateur connecté, chargé à chaque requête (une requête SQL indexée).
@@ -47,9 +89,6 @@ pub struct CurrentUser {
     pub destinataire: Option<Destinataire>,
 }
 
-pub const SERVICE_COURRIER: &str = "SERVICE COURRIER";
-pub const DIRECTEUR_CABINET: &str = "DIRECTEUR DE CABINET";
-
 /// Droits fins, repris des conditions des templates d'origine (voir docs/regles-courrier-arrive.md),
 /// mais vérifiés côté serveur.
 impl CurrentUser {
@@ -61,8 +100,8 @@ impl CurrentUser {
         self.is_granted("ROLE_SUPER_ADMIN")
     }
 
-    fn service_is(&self, libelle: &str) -> bool {
-        self.destinataire.as_ref().is_some_and(|d| d.libelle == libelle)
+    fn profil_is(&self, profil: Profil) -> bool {
+        self.destinataire.as_ref().and_then(|d| d.profil.as_deref()) == Some(profil.code())
     }
 
     pub fn destinataire_id(&self) -> Option<i32> {
@@ -71,17 +110,50 @@ impl CurrentUser {
 
     /// Menu « Gestion de Courriers » : service courrier ou super admin.
     pub fn can_manage_courrier(&self) -> bool {
-        self.is_super_admin() || self.service_is(SERVICE_COURRIER)
+        self.is_super_admin() || self.profil_is(Profil::Courrier)
     }
 
     /// Menu « Imputations » : directeur de cabinet, service courrier ou super admin.
     pub fn can_manage_imputations(&self) -> bool {
-        self.can_manage_courrier() || self.service_is(DIRECTEUR_CABINET)
+        self.can_manage_courrier() || self.profil_is(Profil::Dircab)
+    }
+
+    /// Menu « Cabinet du Ministre » (comptes rendus, diligences).
+    pub fn is_charge_etudes(&self) -> bool {
+        self.profil_is(Profil::Etudes)
     }
 
     /// L'imputation est adressée au service de l'utilisateur.
     pub fn owns(&self, destinataire_id: Option<i32>) -> bool {
         destinataire_id.is_some() && destinataire_id == self.destinataire_id()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn user(roles: &[&str], libelle: &str, profil: Option<Profil>) -> CurrentUser {
+        CurrentUser {
+            id: 1,
+            email: "a@b.c".into(),
+            nom: None,
+            prenom: None,
+            roles: roles.iter().map(|r| r.to_string()).collect(),
+            destinataire: Some(Destinataire { id: 7, libelle: libelle.into(), profil: profil.map(|p| p.code().into()) }),
+        }
+    }
+
+    #[test]
+    fn droits_par_profil_et_non_par_libelle() {
+        // Service courrier renommé : garde ses droits.
+        assert!(user(&["ROLE_ADMIN"], "BUREAU D'ORDRE", Some(Profil::Courrier)).can_manage_courrier());
+        // Libellé d'origine sans profil : aucun droit particulier.
+        assert!(!user(&["ROLE_ADMIN"], "SERVICE COURRIER", None).can_manage_courrier());
+        let dircab = user(&["ROLE_ADMIN"], "DIRCAB", Some(Profil::Dircab));
+        assert!(dircab.can_manage_imputations() && !dircab.can_manage_courrier());
+        assert!(user(&["ROLE_ADMIN"], "CE", Some(Profil::Etudes)).is_charge_etudes());
+        assert!(user(&["ROLE_SUPER_ADMIN"], "DSI", None).can_manage_courrier());
     }
 }
 
@@ -101,12 +173,13 @@ struct UserRow {
     active: Option<bool>,
     destinataire_id: Option<i32>,
     destinataire_libelle: Option<String>,
+    destinataire_profil: Option<String>,
 }
 
 impl From<UserRow> for CurrentUser {
     fn from(r: UserRow) -> Self {
         let destinataire = match (r.destinataire_id, r.destinataire_libelle) {
-            (Some(id), Some(libelle)) => Some(Destinataire { id, libelle }),
+            (Some(id), Some(libelle)) => Some(Destinataire { id, libelle, profil: r.destinataire_profil }),
             _ => None,
         };
         CurrentUser { id: r.id, email: r.email, nom: r.nom, prenom: r.prenom, roles: r.roles.0, destinataire }
@@ -114,7 +187,7 @@ impl From<UserRow> for CurrentUser {
 }
 
 const USER_SELECT: &str = "SELECT u.id, u.email, u.nom, u.prenom, u.roles, u.password, u.active,
-        d.id AS destinataire_id, d.libelle AS destinataire_libelle
+        d.id AS destinataire_id, d.libelle AS destinataire_libelle, d.profil AS destinataire_profil
      FROM users u LEFT JOIN destinataire d ON d.id = u.destinataire_id";
 
 /// Middleware des routes `/admin` : exige une session valide sur un compte actif ayant ROLE_ADMIN
