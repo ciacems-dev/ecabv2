@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ecab",
+      "runtimeExecutable": "cargo",
+      "runtimeArgs": ["run", "-q"],
+      "port": 8080
+    }
+  ]
+}

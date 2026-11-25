@@ -1,0 +1,19 @@
+# Code et données d'origine : secrets et données personnelles, ne jamais committer
+/source/
+/ecab-db.sql.gz
+/ecab-source.tar.gz
+/uploads/
+/var/
+
+# Rust
+/target/
+
+# Environnement local
+.env
+.env.*
+!.env.example
+
+
+# Added by cargo
+
+/target

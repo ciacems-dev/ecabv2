@@ -1,0 +1,30 @@
+# Bases de développement locales.
+#   docker compose -f docker-compose.dev.yml up -d
+# - postgres : base de la nouvelle application
+# - mariadb  : copie de l'ancienne base, chargée depuis ecab-db.sql.gz, source de l'outil d'import
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ecab
+      POSTGRES_PASSWORD: ecab
+      POSTGRES_DB: ecab
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  mariadb:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: mdsd_ecabms
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - ./ecab-db.sql.gz:/docker-entrypoint-initdb.d/ecab-db.sql.gz:ro
+      - maria_data:/var/lib/mysql
+
+volumes:
+  pg_data:
+  maria_data:

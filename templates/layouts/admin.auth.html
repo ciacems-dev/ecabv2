@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block title %} Authentication{% endblock %}</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% include 'layouts/includes/css.html' %}
+	<style>
+.login-full-page {
+    min-height: 100vh;
+    
+    background-image: url({{asset('assets/admin/img/2.jpg')}});
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+</style>
+</head>
+<body class="hold-transition login-page login-full-page" >
+<div class="login-box">
+
+    <div class="login-logo">
+	<b><span style="color:orange;font-weight:bold; font-size:40px">ECab</span>-<span style="color:#FFF;font-weight:bold;font-size:40px">MDSCV</span></b><br>
+       <a href="#">{#<img src="{{asset('assets/admin/img/MS-LOGO.png')}}" width="150" style="border-radius: 80px;"/>#}</a>
+		
+    </div>
+    <!-- /.login-logo -->
+
+    {% block body %}{% endblock %}
+</div>
+<!-- /.login-box -->
+
+{% include 'layouts/includes/script.html' %}
+
+</body>
+</html>

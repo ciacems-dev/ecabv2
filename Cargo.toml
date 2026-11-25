@@ -1,0 +1,26 @@
+[package]
+name = "ecab"
+version = "0.1.0"
+edition = "2024"
+default-run = "ecab"
+
+[dependencies]
+anyhow = "1"
+axum = { version = "0.8", features = ["macros", "multipart"] }
+bcrypt = "0.17"
+chrono = { version = "0.4", features = ["serde"] }
+dotenvy = "0.15"
+hex = "0.4"
+minijinja = { version = "2", features = ["loader"] }
+rand = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "tls-rustls", "postgres", "mysql", "chrono", "json", "migrate", "macros"] }
+thiserror = "2"
+time = "0.3"
+tokio = { version = "1", features = ["full"] }
+tower-http = { version = "0.6", features = ["fs", "trace", "limit", "compression-gzip", "set-header"] }
+tower-sessions = "0.15"
+tower-sessions-sqlx-store = { version = "0.15", features = ["postgres"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }

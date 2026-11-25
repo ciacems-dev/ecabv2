@@ -1,0 +1,52 @@
+{# TEMPORAIRE : seuls les compteurs du tableau de bord d'origine sont portés.
+   Le reste (listes de courriers, CR, diligences, audiences) arrive avec les modules métier. #}
+{% extends 'layouts/admin.html' %}
+
+{% block title %}Accueil | ECAB-MS{% endblock %}
+
+{% block body %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <h1 class="m-0">Tableau de bord</h1>
+    </div>
+  </div>
+  <section class="content">
+    <div class="container-fluid">
+      {% include 'layouts/includes/alert.html' %}
+      <div class="row">
+        <div class="col-lg-4 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3>{{ nbarrive }}</h3>
+              <p>Courrier arrivée(s)</p>
+            </div>
+            <div class="icon"><i class="ion ion-email"></i></div>
+            {% if is_granted("ROLE_SUPER_ADMIN") %}<a href="{{ path('app_carrive_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>{% endif %}
+          </div>
+        </div>
+        <div class="col-lg-4 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3>{{ nbsorti }}</h3>
+              <p>Courrier  départ(s)</p>
+            </div>
+            <div class="icon"><i class="ion ion-paper-airplane"></i></div>
+            <a href="{{ path('app_csortir_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-4 col-6">
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3>{{ nbcomptr }}</h3>
+              <p>Comptes rendus</p>
+            </div>
+            <div class="icon"><i class="ion ion-document-text"></i></div>
+            {% if is_granted("ROLE_SUPER_ADMIN") %}<a href="{{ path('app_compterendu_index') }}" class="small-box-footer">Voir plus <i class="fas fa-arrow-circle-right"></i></a>{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
