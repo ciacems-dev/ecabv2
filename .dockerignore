@@ -1,0 +1,13 @@
+# Ne jamais envoyer au build : code et données d'origine, secrets, fichiers joints, artefacts.
+.git
+target
+source
+uploads
+var
+.env
+.env.*
+*.sql.gz
+*.tar.gz
+*.zip
+.claude
+docs

@@ -190,6 +190,7 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
 
     let app = Router::new()
         .route("/", get(|| async { Redirect::to("/admin") }))
+        .route("/health", get(health))
         .route("/login", get(auth::login_page).post(auth::login_submit))
         .route("/logout", axum::routing::post(auth::logout))
         .merge(admin)
@@ -212,6 +213,17 @@ async fn serve(cfg: Config, db: sqlx::PgPool) -> Result<()> {
     tracing::info!("ECAB-MS en écoute sur http://{}", cfg.bind_addr);
     axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>()).await?;
     Ok(())
+}
+
+/// Sonde de santé (Dokploy / Docker) : 200 si l'application répond et joint PostgreSQL.
+async fn health(axum::extract::State(state): axum::extract::State<AppState>) -> (axum::http::StatusCode, &'static str) {
+    match sqlx::query("SELECT 1").execute(&state.db).await {
+        Ok(_) => (axum::http::StatusCode::OK, "ok"),
+        Err(e) => {
+            tracing::error!(error = %e, "sonde de santé : base injoignable");
+            (axum::http::StatusCode::SERVICE_UNAVAILABLE, "base de données injoignable")
+        }
+    }
 }
 
 /// `ecab create-user <email> <ROLE_...> [libellé du service]`
